@@ -1,7 +1,7 @@
 # Проект «Киноман»
 
 * Студент: [Заур Малахов](https://up.htmlacademy.ru/ecmascript/16/user/1567759).
-* Наставник: `Неизвестно`.
+* Наставник: [Виктор Кан](https://htmlacademy.ru/profile/viktorkan).
 
 ---
 
