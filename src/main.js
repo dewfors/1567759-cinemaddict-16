@@ -6,6 +6,12 @@ import {createFilmsTemplate} from './view/films.js';
 import {createFilmCardTemplate} from './view/film-card.js';
 import {createButtonShowMoreTemplate} from './view/button-show-more.js';
 import {createFilmsStatisticsTemplate} from './view/films-statistics.js';
+import APIMOCK from './mock/mockService.js';
+
+const API = new APIMOCK();
+const films = API.getFilms();
+
+console.log(films);
 
 const FILM_COUNT_ALL_MOVIES = 5;
 const FILM_COUNT_TOP_RATED = 2;
