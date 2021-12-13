@@ -4,6 +4,7 @@ import {createSortTemplate} from './view/sort.js';
 import {createMenuTemplate} from './view/menu.js';
 import {createFilmsTemplate} from './view/films.js';
 import {createFilmCardTemplate} from './view/film-card.js';
+import {createFilmPopupTemplate} from './view/film-popup.js';
 import {createButtonShowMoreTemplate} from './view/button-show-more.js';
 import {createFilmsStatisticsTemplate} from './view/films-statistics.js';
 import APIMOCK from './mock/mockService.js';
@@ -55,3 +56,8 @@ for (let i = 0; i < FILM_COUNT_MOST_COMMENTED; i++) {
 const siteFooterElement = document.querySelector('.footer');
 const siteFooterStatisticsElement = siteFooterElement.querySelector('.footer__statistics');
 renderTemplate(siteFooterStatisticsElement, createFilmsStatisticsTemplate(),  RenderPosition.BEFOREEND);
+
+
+// Popup
+const siteBodyElement = document.querySelector('body');
+renderTemplate(siteBodyElement, createFilmPopupTemplate(films[0]),  RenderPosition.BEFOREEND);
