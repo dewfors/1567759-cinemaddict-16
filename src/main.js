@@ -55,9 +55,9 @@ for (let i = 0; i < FILM_COUNT_MOST_COMMENTED; i++) {
 // Footer
 const siteFooterElement = document.querySelector('.footer');
 const siteFooterStatisticsElement = siteFooterElement.querySelector('.footer__statistics');
-renderTemplate(siteFooterStatisticsElement, createFilmsStatisticsTemplate(),  RenderPosition.BEFOREEND);
+renderTemplate(siteFooterStatisticsElement, createFilmsStatisticsTemplate(films.length),  RenderPosition.BEFOREEND);
 
 
 // Popup
-const siteBodyElement = document.querySelector('body');
-renderTemplate(siteBodyElement, createFilmPopupTemplate(films[0]),  RenderPosition.BEFOREEND);
+// const siteBodyElement = document.querySelector('body');
+// renderTemplate(siteBodyElement, createFilmPopupTemplate(films[0]),  RenderPosition.BEFOREEND);
