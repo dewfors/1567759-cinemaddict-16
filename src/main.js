@@ -35,20 +35,20 @@ const filmListMostCommented = filmsElement.querySelector('.films-list--most-comm
 // All movies
 const filmListContainerAllMovies = filmListAllMovies.querySelector('.films-list__container');
 for (let i = 0; i < FILM_COUNT_ALL_MOVIES; i++) {
-  renderTemplate(filmListContainerAllMovies, createFilmCardTemplate(), RenderPosition.BEFOREEND);
+  renderTemplate(filmListContainerAllMovies, createFilmCardTemplate(films[i]), RenderPosition.BEFOREEND);
 }
 renderTemplate(filmListAllMovies, createButtonShowMoreTemplate(),  RenderPosition.BEFOREEND);
 
 // Top rated
 const filmListContainerTopRated = filmListTopRated.querySelector('.films-list__container');
 for (let i = 0; i < FILM_COUNT_TOP_RATED; i++) {
-  renderTemplate(filmListContainerTopRated, createFilmCardTemplate(), RenderPosition.BEFOREEND);
+  renderTemplate(filmListContainerTopRated, createFilmCardTemplate(films[i]), RenderPosition.BEFOREEND);
 }
 
 // Most commented
 const filmListContainerMostCommented = filmListMostCommented.querySelector('.films-list__container');
 for (let i = 0; i < FILM_COUNT_MOST_COMMENTED; i++) {
-  renderTemplate(filmListContainerMostCommented, createFilmCardTemplate(), RenderPosition.BEFOREEND);
+  renderTemplate(filmListContainerMostCommented, createFilmCardTemplate(films[i]), RenderPosition.BEFOREEND);
 }
 
 // Footer

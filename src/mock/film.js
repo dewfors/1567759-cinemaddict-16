@@ -1,3 +1,4 @@
+import {generateComment} from './comment.js';
 import {getRandomInteger, getRandomiseArray} from '../utils/utils.js';
 
 const mockData = {
@@ -125,6 +126,10 @@ const mockData = {
       releaseCountry: this.generateCountry(),
     };
   },
+  generateComments () {
+    const randomCountComments = getRandomInteger(0, 5);
+    return new Array(randomCountComments).fill().map(generateComment);
+  }
 };
 
 export const generateFilm = () => ({
@@ -140,4 +145,5 @@ export const generateFilm = () => ({
   runtime: getRandomInteger(45, 230),
   genre: mockData.generateGenre(),
   description: mockData.generateDescription(),
+  comments: mockData.generateComments(),
 });
