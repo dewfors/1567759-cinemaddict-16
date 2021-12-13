@@ -137,7 +137,7 @@ export const generateFilm = () => ({
   alternativeTitle: mockData.generateFullTitle(),
   totalRating: 5.3,
   poster: `images/posters/${mockData.generatePoster()}`,
-  ageRating: 0,
+  ageRating: 3,
   director: mockData.generateDirector(),
   writers: mockData.generateWriters(),
   actors: mockData.generateActors(),
@@ -146,4 +146,10 @@ export const generateFilm = () => ({
   genre: mockData.generateGenre(),
   description: mockData.generateDescription(),
   comments: mockData.generateComments(),
+  userDetails: {
+    watchlist:  Math.random() >= 0.5,
+    alreadyWatched:  Math.random() >= 0.5,
+    watchingDate: mockData.generateDate(),
+    favorite:  Math.random() >= 0.5,
+  }
 });

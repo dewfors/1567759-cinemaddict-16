@@ -4,7 +4,7 @@ import {createSortTemplate} from './view/sort.js';
 import {createMenuTemplate} from './view/menu.js';
 import {createFilmsTemplate} from './view/films.js';
 import {createFilmCardTemplate} from './view/film-card.js';
-import {createFilmPopupTemplate} from './view/film-popup.js';
+// import {createFilmPopupTemplate} from './view/film-popup.js';
 import {createButtonShowMoreTemplate} from './view/button-show-more.js';
 import {createFilmsStatisticsTemplate} from './view/films-statistics.js';
 import APIMOCK from './mock/mockService.js';
@@ -24,7 +24,7 @@ renderTemplate(siteHeaderElement, createProfileTemplate(),RenderPosition.BEFOREE
 
 // Main
 const siteMainElement = document.querySelector('.main');
-renderTemplate(siteMainElement,createMenuTemplate(),RenderPosition.BEFOREEND);
+renderTemplate(siteMainElement,createMenuTemplate(films),RenderPosition.BEFOREEND);
 renderTemplate(siteMainElement,createSortTemplate(),RenderPosition.BEFOREEND);
 renderTemplate(siteMainElement,createFilmsTemplate(),RenderPosition.BEFOREEND);
 
