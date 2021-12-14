@@ -5,16 +5,16 @@ import {createMenuTemplate} from './view/menu.js';
 import {createFilmsTemplate} from './view/films.js';
 import {createFilmCardTemplate} from './view/film-card.js';
 // import {createFilmPopupTemplate} from './view/film-popup.js';
-import {createButtonShowMoreTemplate} from './view/button-show-more.js';
+import {createShowMoreButtonTemplate} from './view/show-more-button.js';
 import {createFilmsStatisticsTemplate} from './view/films-statistics.js';
 import APIMOCK from './mock/mockService.js';
 
 const API = new APIMOCK();
 const films = API.getFilms();
 
-console.log(films);
+// console.log(films);
 
-const FILM_COUNT_ALL_MOVIES = 5;
+const FILM_COUNT_PER_STEP = 5;
 const FILM_COUNT_TOP_RATED = 2;
 const FILM_COUNT_MOST_COMMENTED = 2;
 
@@ -35,10 +35,32 @@ const filmListMostCommented = filmsElement.querySelector('.films-list--most-comm
 
 // All movies
 const filmListContainerAllMovies = filmListAllMovies.querySelector('.films-list__container');
-for (let i = 0; i < FILM_COUNT_ALL_MOVIES; i++) {
+for (let i = 0; i < Math.min(films.length, FILM_COUNT_PER_STEP); i++) {
   renderTemplate(filmListContainerAllMovies, createFilmCardTemplate(films[i]), RenderPosition.BEFOREEND);
 }
-renderTemplate(filmListAllMovies, createButtonShowMoreTemplate(),  RenderPosition.BEFOREEND);
+
+if (films.length > FILM_COUNT_PER_STEP) {
+  let renderedFilmCount = FILM_COUNT_PER_STEP;
+
+  renderTemplate(filmListAllMovies, createShowMoreButtonTemplate(),  RenderPosition.BEFOREEND);
+
+  const showMoreButton = filmListAllMovies.querySelector('.films-list__show-more');
+
+  showMoreButton.addEventListener('click', (evt) =>{
+    evt.preventDefault();
+    films
+      .slice(renderedFilmCount, renderedFilmCount + FILM_COUNT_PER_STEP)
+      .forEach((film) =>renderTemplate(filmListContainerAllMovies, createFilmCardTemplate(film), RenderPosition.BEFOREEND));
+
+    renderedFilmCount += FILM_COUNT_PER_STEP;
+
+    if (renderedFilmCount >= films.length) {
+      showMoreButton.remove();
+    }
+
+  });
+
+}
 
 // Top rated
 const filmListContainerTopRated = filmListTopRated.querySelector('.films-list__container');
