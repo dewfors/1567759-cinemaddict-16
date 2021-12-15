@@ -4,7 +4,7 @@ import {createSortTemplate} from './view/sort.js';
 import {createMenuTemplate} from './view/menu.js';
 import {createFilmsTemplate} from './view/films.js';
 import {createFilmCardTemplate} from './view/film-card.js';
-// import {createFilmPopupTemplate} from './view/film-popup.js';
+import {createFilmPopupTemplate} from './view/film-popup.js';
 import {createShowMoreButtonTemplate} from './view/show-more-button.js';
 import {createFilmsStatisticsTemplate} from './view/films-statistics.js';
 import APIMOCK from './mock/mockService.js';
@@ -81,5 +81,5 @@ renderTemplate(siteFooterStatisticsElement, createFilmsStatisticsTemplate(films.
 
 
 // Popup
-// const siteBodyElement = document.querySelector('body');
-// renderTemplate(siteBodyElement, createFilmPopupTemplate(films[0]),  RenderPosition.BEFOREEND);
+const siteBodyElement = document.querySelector('body');
+renderTemplate(siteBodyElement, createFilmPopupTemplate(films[0]),  RenderPosition.BEFOREEND);

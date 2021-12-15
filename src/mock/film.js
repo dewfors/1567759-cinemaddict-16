@@ -77,79 +77,78 @@ const mockData = {
     'Brazil',
     'United Kingdom',
   ],
-  generateTitle() {
-    return this.titles[getRandomInteger(0, this.titles.length - 1)];
-  },
-  generateFullTitle() {
-    return this.fullTitles[getRandomInteger(0, this.fullTitles.length - 1)];
-  },
-  generatePoster() {
-    return this.posters[getRandomInteger(0, this.posters.length - 1)];
-  },
-  generateDirector() {
-    return this.directors[getRandomInteger(0, this.directors.length - 1)];
-  },
-  generateWriters() {
-    const countWriters = getRandomInteger(1, 2);
-    return getRandomiseArray(this.writers, countWriters);
-  },
-  generateActors() {
-    return getRandomiseArray(this.actors, this.actors.length - 1);
-  },
-  generateGenre() {
-    const countGenre = getRandomInteger(1, 3);
-    return getRandomiseArray(this.genre, countGenre);
-  },
-  generateDescription() {
-    const descriptionSentenceMin = 1;
-    const descriptionSentenceMax = 5;
-    const descriptionArray = this.description.split('.')
-      .map((text) => text.trim())
-      .filter((text) => text.length > 0);
-
-    const randomCountDescriptionSentence = getRandomInteger(descriptionSentenceMin, descriptionSentenceMax);
-    const randomDescriptionArray = getRandomiseArray(descriptionArray, randomCountDescriptionSentence);
-    return `${randomDescriptionArray.join('. ').trim()}.`;
-  },
-  generateDate() {
-    const daysGap = getRandomInteger(31, 365);
-    return (
-      Date.now() - Math.floor(Math.random() * daysGap) * 24 * 60 * 60 * 1000
-    );
-  },
-  generateCountry() {
-    return this.countries[getRandomInteger(0, this.countries.length - 1)];
-  },
-  generateRelease() {
-    return {
-      date: this.generateDate(),
-      releaseCountry: this.generateCountry(),
-    };
-  },
-  generateComments () {
-    const randomCountComments = getRandomInteger(0, 5);
-    return new Array(randomCountComments).fill().map(generateComment);
-  }
 };
 
+const generateTitle = () => mockData.titles[getRandomInteger(0, mockData.titles.length - 1)];
+
+const generateFullTitle = () => mockData.fullTitles[getRandomInteger(0, mockData.fullTitles.length - 1)];
+
+const generatePoster = () => mockData.posters[getRandomInteger(0, mockData.posters.length - 1)];
+
+const generateDirector = () => mockData.directors[getRandomInteger(0, mockData.directors.length - 1)];
+
+const generateWriters = () => {
+  const countWriters = getRandomInteger(1, 2);
+  return getRandomiseArray(mockData.writers, countWriters);
+};
+
+const generateActors = () => getRandomiseArray(mockData.actors, mockData.actors.length - 1);
+
+const generateGenre = () => {
+  const countGenre = getRandomInteger(1, 3);
+  return getRandomiseArray(mockData.genre, countGenre);
+};
+
+const generateDescription = () => {
+  const descriptionSentenceMin = 1;
+  const descriptionSentenceMax = 5;
+  const descriptionArray = mockData.description.split('.')
+    .map((text) => text.trim())
+    .filter((text) => text.length > 0);
+
+  const randomCountDescriptionSentence = getRandomInteger(descriptionSentenceMin, descriptionSentenceMax);
+  const randomDescriptionArray = getRandomiseArray(descriptionArray, randomCountDescriptionSentence);
+  return `${randomDescriptionArray.join('. ').trim()}.`;
+};
+
+const generateDate = () => {
+  const daysGap = getRandomInteger(31, 365);
+  return (
+    Date.now() - Math.floor(Math.random() * daysGap) * 24 * 60 * 60 * 1000
+  );
+};
+
+const generateCountry = () => mockData.countries[getRandomInteger(0, mockData.countries.length - 1)];
+
+const generateRelease = () => ({
+  date: generateDate(),
+  releaseCountry: generateCountry(),
+});
+
+const generateComments = () => {
+  const randomCountComments = getRandomInteger(0, 5);
+  return new Array(randomCountComments).fill().map(generateComment);
+};
+
+
 export const generateFilm = () => ({
-  title: mockData.generateTitle(),
-  alternativeTitle: mockData.generateFullTitle(),
+  title: generateTitle(),
+  alternativeTitle: generateFullTitle(),
   totalRating: 5.3,
-  poster: `images/posters/${mockData.generatePoster()}`,
+  poster: `images/posters/${generatePoster()}`,
   ageRating: 3,
-  director: mockData.generateDirector(),
-  writers: mockData.generateWriters(),
-  actors: mockData.generateActors(),
-  release: mockData.generateRelease(),
+  director: generateDirector(),
+  writers: generateWriters(),
+  actors: generateActors(),
+  release: generateRelease(),
   runtime: getRandomInteger(45, 230),
-  genre: mockData.generateGenre(),
-  description: mockData.generateDescription(),
-  comments: mockData.generateComments(),
+  genre: generateGenre(),
+  description: generateDescription(),
+  comments: generateComments(),
   userDetails: {
-    watchlist:  Math.random() >= 0.5,
-    alreadyWatched:  Math.random() >= 0.5,
-    watchingDate: mockData.generateDate(),
-    favorite:  Math.random() >= 0.5,
+    watchlist: Math.random() >= 0.5,
+    alreadyWatched: Math.random() >= 0.5,
+    watchingDate: generateDate(),
+    favorite: Math.random() >= 0.5,
   }
 });

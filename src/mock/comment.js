@@ -1,6 +1,5 @@
 import {getRandomInteger, getRandomiseArray} from '../utils/utils.js';
 
-
 const mockData = {
   authors: [
     'Amelia Oliver',
@@ -15,35 +14,35 @@ const mockData = {
     'puke',
     'angry',
   ],
-  generateAuthor() {
-    return this.authors[getRandomInteger(0, this.authors.length - 1)];
-  },
-  generateCommentText() {
-    const commentSentenceMin = 1;
-    const commentSentenceMax = 2;
-
-    const commentArray = this.commentText.split('.')
-      .map((text) => text.trim())
-      .filter((text) => text.length > 0);
-
-    const randomCountCommentSentence = getRandomInteger(commentSentenceMin, commentSentenceMax);
-    const randomCommentArray = getRandomiseArray(commentArray, randomCountCommentSentence);
-    return `${randomCommentArray.join('. ').trim()}.`;
-  },
-  generateDate() {
-    const daysGap = getRandomInteger(31, 365);
-    return (
-      Date.now() - Math.floor(Math.random() * daysGap) * 24 * 60 * 60 * 1000
-    );
-  },
-  generateEmotion() {
-    return this.emotions[getRandomInteger(0, this.emotions.length - 1)];
-  },
 };
 
+const generateAuthor = () => mockData.authors[getRandomInteger(0, mockData.authors.length - 1)];
+
+const generateCommentText = () => {
+  const commentSentenceMin = 1;
+  const commentSentenceMax = 2;
+
+  const commentArray = mockData.commentText.split('.')
+    .map((text) => text.trim())
+    .filter((text) => text.length > 0);
+
+  const randomCountCommentSentence = getRandomInteger(commentSentenceMin, commentSentenceMax);
+  const randomCommentArray = getRandomiseArray(commentArray, randomCountCommentSentence);
+  return `${randomCommentArray.join('. ').trim()}.`;
+};
+
+const generateDate = () => {
+  const daysGap = getRandomInteger(31, 365);
+  return (
+    Date.now() - Math.floor(Math.random() * daysGap) * 24 * 60 * 60 * 1000
+  );
+};
+
+const generateEmotion = () => mockData.emotions[getRandomInteger(0, mockData.emotions.length - 1)];
+
 export const generateComment = () => ({
-  author: mockData.generateAuthor(),
-  comment: mockData.generateCommentText(),
-  date: mockData.generateDate(),
-  emotion: mockData.generateEmotion(),
+  author: generateAuthor(),
+  comment: generateCommentText(),
+  date: generateDate(),
+  emotion: generateEmotion(),
 });
