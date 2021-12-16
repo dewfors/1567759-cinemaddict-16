@@ -1,15 +1,32 @@
-export const createFilmCardTemplate = () => `<article class="film-card">
+import {formatDate, getTimeDuration} from '../utils/common.js';
+import {SHORT_DESCRIPTION_MAX_LENGTH} from '../utils/const.js';
+
+export const createFilmCardTemplate = (film) => {
+  const {title, totalRating, release, runtime, genre, description, poster} = film;
+
+  const year = formatDate(release.date);
+  const hours = getTimeDuration(runtime).hours();
+  const minutes = getTimeDuration(runtime).minutes();
+
+  const currentGenre = genre[0];
+
+  const shortDescription = description.length > SHORT_DESCRIPTION_MAX_LENGTH
+    ? `${description.slice(0, SHORT_DESCRIPTION_MAX_LENGTH)}...`
+    : description;
+  const commentsCount = film.comments.length;
+
+  return `<article class="film-card">
           <a class="film-card__link">
-            <h3 class="film-card__title">The Dance of Life</h3>
-            <p class="film-card__rating">8.3</p>
+            <h3 class="film-card__title">${title}</h3>
+            <p class="film-card__rating">${totalRating}</p>
             <p class="film-card__info">
-              <span class="film-card__year">1929</span>
-              <span class="film-card__duration">1h 55m</span>
-              <span class="film-card__genre">Musical</span>
+              <span class="film-card__year">${year}</span>
+              <span class="film-card__duration">${hours}h ${minutes}m</span>
+              <span class="film-card__genre">${currentGenre}</span>
             </p>
-            <img src="./images/posters/the-dance-of-life.jpg" alt="" class="film-card__poster">
-            <p class="film-card__description">Burlesque comic Ralph "Skid" Johnson (Skelly), and specialty dancer Bonny Lee King (Carroll), end up together on a cold, rainy night at a tr…</p>
-            <span class="film-card__comments">5 comments</span>
+            <img src="${poster}" alt="" class="film-card__poster">
+            <p class="film-card__description">${shortDescription}</p>
+            <span class="film-card__comments">${commentsCount} comments</span>
           </a>
           <div class="film-card__controls">
             <button class="film-card__controls-item film-card__controls-item--add-to-watchlist" type="button">Add to watchlist</button>
@@ -17,3 +34,4 @@ export const createFilmCardTemplate = () => `<article class="film-card">
             <button class="film-card__controls-item film-card__controls-item--favorite" type="button">Mark as favorite</button>
           </div>
         </article>`;
+};
