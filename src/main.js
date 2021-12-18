@@ -3,13 +3,14 @@ import SortView from './view/sort-view.js';
 import ProfileView from './view/profile-view.js';
 import ShowMoreButtonView from './view/show-more-button-view.js';
 import FilmsBoardView from './view/films-board-view.js';
+import FilmsStatisticsView from './view/films-statistics-view.js';
 import {createProfileTemplate} from './view/profile-view.js';
 import {createMenuTemplate} from './view/menu.js';
 import {createFilmsTemplate} from './view/films.js';
 import {createFilmCardTemplate} from './view/film-card.js';
 // import {createFilmPopupTemplate} from './view/film-popup.js';
 // import {createShowMoreButtonTemplate} from './view/show-more-button-view.js';
-import {createFilmsStatisticsTemplate} from './view/films-statistics.js';
+import {createFilmsStatisticsTemplate} from './view/films-statistics-view.js';
 import APIMOCK from './mock/mockService.js';
 
 const API = new APIMOCK();
@@ -95,12 +96,12 @@ const filmListMostCommented = filmsElement.querySelector('.films-list--most-comm
 //   renderTemplate(filmListContainerMostCommented, createFilmCardTemplate(films[i]), RenderPosition.BEFOREEND);
 // }
 //
-// // Footer
-// const siteFooterElement = document.querySelector('.footer');
-// const siteFooterStatisticsElement = siteFooterElement.querySelector('.footer__statistics');
-// renderTemplate(siteFooterStatisticsElement, createFilmsStatisticsTemplate(films.length),  RenderPosition.BEFOREEND);
-//
-//
+// Footer
+const siteFooterElement = document.querySelector('.footer');
+const siteFooterStatisticsElement = siteFooterElement.querySelector('.footer__statistics');
+const footerStatisticsComponent = new FilmsStatisticsView(films.length);
+renderElement(siteFooterStatisticsElement, footerStatisticsComponent.element, RenderPosition.BEFOREEND);
+
 // // Popup
 // // const siteBodyElement = document.querySelector('body');
 // // renderTemplate(siteBodyElement, createFilmPopupTemplate(films[0]),  RenderPosition.BEFOREEND);
