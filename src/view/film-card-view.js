@@ -1,7 +1,8 @@
+import {createElement} from '../render.js';
 import {formatDate, getTimeDuration} from '../utils/common.js';
 import {SHORT_DESCRIPTION_MAX_LENGTH} from '../utils/const.js';
 
-export const createFilmCardTemplate = (film) => {
+const createFilmCardTemplate = (film) => {
   const {title, totalRating, release, runtime, genre, description, poster} = film;
 
   const year = formatDate(release.date);
@@ -35,3 +36,28 @@ export const createFilmCardTemplate = (film) => {
           </div>
         </article>`;
 };
+
+export default class FilmCardView {
+  #element = null;
+  #film = null;
+
+  constructor(film) {
+    this.#film = film;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createFilmCardTemplate(this.#film);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
