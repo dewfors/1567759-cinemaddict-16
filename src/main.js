@@ -1,6 +1,7 @@
-import {RenderPosition, renderTemplate} from './render.js';
+import {RenderPosition, renderElement, renderTemplate} from './render.js';
+import SortView from './view/sort-view.js';
 import {createProfileTemplate} from './view/profile.js';
-import {createSortTemplate} from './view/sort.js';
+import {createSortTemplate} from './view/sort-view.js';
 import {createMenuTemplate} from './view/menu.js';
 import {createFilmsTemplate} from './view/films.js';
 import {createFilmCardTemplate} from './view/film-card.js';
@@ -25,7 +26,8 @@ renderTemplate(siteHeaderElement, createProfileTemplate(),RenderPosition.BEFOREE
 // Main
 const siteMainElement = document.querySelector('.main');
 renderTemplate(siteMainElement,createMenuTemplate(films),RenderPosition.BEFOREEND);
-renderTemplate(siteMainElement,createSortTemplate(),RenderPosition.BEFOREEND);
+// renderTemplate(siteMainElement,createSortTemplate(),RenderPosition.BEFOREEND);
+renderElement(siteMainElement, new SortView().element,RenderPosition.BEFOREEND);
 renderTemplate(siteMainElement,createFilmsTemplate(),RenderPosition.BEFOREEND);
 
 const filmsElement = siteMainElement.querySelector('.films');
@@ -81,5 +83,5 @@ renderTemplate(siteFooterStatisticsElement, createFilmsStatisticsTemplate(films.
 
 
 // Popup
-const siteBodyElement = document.querySelector('body');
-renderTemplate(siteBodyElement, createFilmPopupTemplate(films[0]),  RenderPosition.BEFOREEND);
+// const siteBodyElement = document.querySelector('body');
+// renderTemplate(siteBodyElement, createFilmPopupTemplate(films[0]),  RenderPosition.BEFOREEND);
