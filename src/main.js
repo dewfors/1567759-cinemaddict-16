@@ -1,11 +1,18 @@
 import {RenderPosition, renderElement, renderTemplate} from './render.js';
+import MenuView from './view/menu-view.js';
 import SortView from './view/sort-view.js';
 import ProfileView from './view/profile-view.js';
 import ShowMoreButtonView from './view/show-more-button-view.js';
 import FilmsBoardView from './view/films-board-view.js';
+import FilmsListAllMoviesView from './view/films-list-all-movies-view.js';
+import FilmsListTopRatedView from './view/films-list-top-rated-view.js';
+import FilmsListMostCommentedView from './view/films-list-most-commented-view.js';
+import FilmsListContainerView from './view/films-list-container-view.js';
+
+
 import FilmsStatisticsView from './view/films-statistics-view.js';
-import {createProfileTemplate} from './view/profile-view.js';
-import {createMenuTemplate} from './view/menu.js';
+// import {createProfileTemplate} from './view/profile-view.js';
+// import {createMenuTemplate} from './view/menu-view.js';
 import {createFilmsTemplate} from './view/films.js';
 import {createFilmCardTemplate} from './view/film-card.js';
 // import {createFilmPopupTemplate} from './view/film-popup.js';
@@ -33,12 +40,34 @@ renderElement(siteHeaderElement, profileComponent.element, RenderPosition.BEFORE
 
 // Main
 const siteMainElement = document.querySelector('.main');
+const menuComponent = new MenuView(films);
+const sortComponent = new SortView();
+renderElement(siteMainElement, menuComponent.element,RenderPosition.BEFOREEND);
+renderElement(siteMainElement, sortComponent.element,RenderPosition.BEFOREEND);
+
 const filmsBoardComponent = new FilmsBoardView();
 renderElement(siteMainElement, filmsBoardComponent.element, RenderPosition.BEFOREEND);
 
+const filmsListAllMoviesComponent = new FilmsListAllMoviesView();
+const filmsListAllComponent = new FilmsListContainerView();
+renderElement(filmsBoardComponent.element, filmsListAllMoviesComponent.element, RenderPosition.BEFOREEND);
+renderElement(filmsListAllMoviesComponent.element, filmsListAllComponent.element, RenderPosition.BEFOREEND);
 
-renderTemplate(siteMainElement,createMenuTemplate(films),RenderPosition.BEFOREEND);
-renderElement(siteMainElement, new SortView().element,RenderPosition.BEFOREEND);
+const filmsListTopRatedComponent = new FilmsListTopRatedView();
+const filmsListRateComponent = new FilmsListContainerView();
+renderElement(filmsBoardComponent.element, filmsListTopRatedComponent.element, RenderPosition.BEFOREEND);
+renderElement(filmsListTopRatedComponent.element, filmsListRateComponent.element, RenderPosition.BEFOREEND);
+
+const filmsListMostCommentedComponent = new FilmsListMostCommentedView();
+const filmsListCommentComponent = new FilmsListContainerView();
+renderElement(filmsBoardComponent.element, filmsListMostCommentedComponent.element, RenderPosition.BEFOREEND);
+renderElement(filmsListMostCommentedComponent.element, filmsListCommentComponent.element, RenderPosition.BEFOREEND);
+
+
+
+
+// renderTemplate(siteMainElement,createMenuTemplate(films),RenderPosition.BEFOREEND);
+
 
 
 
