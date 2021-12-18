@@ -1,12 +1,12 @@
 import {RenderPosition, renderElement, renderTemplate} from './render.js';
 import SortView from './view/sort-view.js';
+import ShowMoreButtonView from './view/show-more-button-view.js';
 import {createProfileTemplate} from './view/profile.js';
-import {createSortTemplate} from './view/sort-view.js';
 import {createMenuTemplate} from './view/menu.js';
 import {createFilmsTemplate} from './view/films.js';
 import {createFilmCardTemplate} from './view/film-card.js';
-import {createFilmPopupTemplate} from './view/film-popup.js';
-import {createShowMoreButtonTemplate} from './view/show-more-button.js';
+// import {createFilmPopupTemplate} from './view/film-popup.js';
+// import {createShowMoreButtonTemplate} from './view/show-more-button-view.js';
 import {createFilmsStatisticsTemplate} from './view/films-statistics.js';
 import APIMOCK from './mock/mockService.js';
 
@@ -44,11 +44,14 @@ for (let i = 0; i < Math.min(films.length, FILM_COUNT_PER_STEP); i++) {
 if (films.length > FILM_COUNT_PER_STEP) {
   let renderedFilmCount = FILM_COUNT_PER_STEP;
 
-  renderTemplate(filmListAllMovies, createShowMoreButtonTemplate(),  RenderPosition.BEFOREEND);
+  // renderTemplate(filmListAllMovies, createShowMoreButtonTemplate(),  RenderPosition.BEFOREEND);
+  const showMoreButtonComponent = new ShowMoreButtonView();
 
-  const showMoreButton = filmListAllMovies.querySelector('.films-list__show-more');
+  //const showMoreButton = filmListAllMovies.querySelector('.films-list__show-more');
+  renderElement(filmListAllMovies, showMoreButtonComponent.element, RenderPosition.BEFOREEND);
 
-  showMoreButton.addEventListener('click', (evt) =>{
+  // showMoreButton.addEventListener('click', (evt) =>{
+  showMoreButtonComponent.element.addEventListener('click', (evt) =>{
     evt.preventDefault();
     films
       .slice(renderedFilmCount, renderedFilmCount + FILM_COUNT_PER_STEP)
@@ -57,7 +60,9 @@ if (films.length > FILM_COUNT_PER_STEP) {
     renderedFilmCount += FILM_COUNT_PER_STEP;
 
     if (renderedFilmCount >= films.length) {
-      showMoreButton.remove();
+      // showMoreButton.remove();
+      showMoreButtonComponent.element.remove();
+      showMoreButtonComponent.removeElement();
     }
 
   });
