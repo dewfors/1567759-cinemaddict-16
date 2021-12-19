@@ -1,3 +1,4 @@
+import {createElement} from '../render.js';
 import {formatDate, getTimeDuration} from '../utils/common.js';
 
 export const createFilmPopupTemplate = (film) => {
@@ -145,3 +146,29 @@ export const createFilmPopupTemplate = (film) => {
 </section>`;
 
 };
+
+
+export default class FilmPopupView {
+  #element = null;
+  #film = null;
+
+  constructor(film) {
+    this.#film = film;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createFilmPopupTemplate(this.#film);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

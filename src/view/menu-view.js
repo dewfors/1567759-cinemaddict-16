@@ -1,3 +1,4 @@
+import {createElement} from '../render.js';
 import {filter} from '../utils/utils.js';
 import {FilterType} from '../utils/const.js';
 
@@ -16,4 +17,29 @@ export const createMenuTemplate = (films) => {
     <a href="#stats" class="main-navigation__additional">Stats</a>
   </nav>`;
 };
+
+export default class MenuView {
+  #element = null;
+  #films = null;
+
+  constructor(films) {
+    this.#films = films;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createMenuTemplate(this.#films);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
 
