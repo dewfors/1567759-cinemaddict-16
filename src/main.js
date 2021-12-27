@@ -1,4 +1,4 @@
-import {RenderPosition, render} from './render.js';
+import {RenderPosition, render} from './utils/render.js';
 import {BODY_HIDE_OVERFLOW_CLASS_NAME} from './utils/const.js';
 import MenuView from './view/menu-view.js';
 import SortView from './view/sort-view.js';
@@ -59,14 +59,14 @@ const renderFilm = (filmListElement, film) => {
     document.removeEventListener('keydown', onEscKeyDown);
   });
 
-  render(filmListElement, filmComponent.element, RenderPosition.BEFOREEND);
+  render(filmListElement, filmComponent, RenderPosition.BEFOREEND);
 };
 
 // Header
 const siteHeaderElement = document.querySelector('.header');
 const renderHeader = () => {
   const profileComponent = new ProfileView();
-  render(siteHeaderElement, profileComponent.element, RenderPosition.BEFOREEND);
+  render(siteHeaderElement, profileComponent, RenderPosition.BEFOREEND);
 };
 
 // Main
@@ -75,7 +75,7 @@ const siteMainElement = document.querySelector('.main');
 const renderMainBoard = () => {
   const menuComponent = new MenuView(films);
   const sortComponent = new SortView();
-  render(siteMainElement, menuComponent.element, RenderPosition.BEFOREEND);
+  render(siteMainElement, menuComponent, RenderPosition.BEFOREEND);
 
   const filmsBoardComponent = new FilmsBoardView();
 
@@ -90,20 +90,20 @@ const renderMainBoard = () => {
 
   // All movies
   if (films.length === 0) {
-    render(filmsBoardComponent.element, new FilmsListNoFilmsView().element, RenderPosition.AFTERBEGIN);
+    render(filmsBoardComponent, new FilmsListNoFilmsView(), RenderPosition.AFTERBEGIN);
   } else {
-    render(siteMainElement, sortComponent.element, RenderPosition.BEFOREEND);
-    render(siteMainElement, filmsBoardComponent.element, RenderPosition.BEFOREEND);
+    render(siteMainElement, sortComponent, RenderPosition.BEFOREEND);
+    render(siteMainElement, filmsBoardComponent, RenderPosition.BEFOREEND);
 
 
-    render(filmsBoardComponent.element, filmsListAllMoviesComponent.element, RenderPosition.BEFOREEND);
-    render(filmsListAllMoviesComponent.element, filmsListAllComponent.element, RenderPosition.BEFOREEND);
+    render(filmsBoardComponent, filmsListAllMoviesComponent, RenderPosition.BEFOREEND);
+    render(filmsListAllMoviesComponent, filmsListAllComponent, RenderPosition.BEFOREEND);
 
-    render(filmsBoardComponent.element, filmsListTopRatedComponent.element, RenderPosition.BEFOREEND);
-    render(filmsListTopRatedComponent.element, filmsListRateComponent.element, RenderPosition.BEFOREEND);
+    render(filmsBoardComponent, filmsListTopRatedComponent, RenderPosition.BEFOREEND);
+    render(filmsListTopRatedComponent, filmsListRateComponent, RenderPosition.BEFOREEND);
 
-    render(filmsBoardComponent.element, filmsListMostCommentedComponent.element, RenderPosition.BEFOREEND);
-    render(filmsListMostCommentedComponent.element, filmsListCommentComponent.element, RenderPosition.BEFOREEND);
+    render(filmsBoardComponent, filmsListMostCommentedComponent, RenderPosition.BEFOREEND);
+    render(filmsListMostCommentedComponent, filmsListCommentComponent, RenderPosition.BEFOREEND);
 
 
     for (let i = 0; i < Math.min(films.length, FILM_COUNT_PER_STEP); i++) {
@@ -114,7 +114,7 @@ const renderMainBoard = () => {
       let renderedFilmCount = FILM_COUNT_PER_STEP;
 
       const showMoreButtonComponent = new ShowMoreButtonView();
-      render(filmsListAllMoviesComponent.element, showMoreButtonComponent.element, RenderPosition.BEFOREEND);
+      render(filmsListAllMoviesComponent, showMoreButtonComponent, RenderPosition.BEFOREEND);
 
       showMoreButtonComponent.setClickHandler(() => {
         films
@@ -148,7 +148,7 @@ const siteFooterStatisticsElement = siteFooterElement.querySelector('.footer__st
 
 const renderFooter = () => {
   const footerStatisticsComponent = new FilmsStatisticsView(films.length);
-  render(siteFooterStatisticsElement, footerStatisticsComponent.element, RenderPosition.BEFOREEND);
+  render(siteFooterStatisticsElement, footerStatisticsComponent, RenderPosition.BEFOREEND);
 };
 
 renderHeader();
