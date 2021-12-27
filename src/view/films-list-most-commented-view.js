@@ -5,9 +5,7 @@ const createFilmsListMostCommentedTemplate = () => `<section class="films-list f
     </section>`;
 
 export default class FilmsListMostCommentedView extends AbstractView{
-
   get template() {
     return createFilmsListMostCommentedTemplate();
   }
-
 }

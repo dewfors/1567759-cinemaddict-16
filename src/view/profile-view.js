@@ -6,9 +6,7 @@ const createProfileTemplate = () => `<section class="header__profile profile">
   </section>`;
 
 export default class ProfileView extends AbstractView{
-
   get template() {
     return createProfileTemplate();
   }
-
 }

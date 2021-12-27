@@ -13,9 +13,7 @@ const createFilmsListNoFilmsTemplate = () => `<section class="films-list">
     </section>`;
 
 export default class FilmsListNoFilmsView extends AbstractView{
-
   get template() {
     return createFilmsListNoFilmsTemplate();
   }
-
 }
