@@ -35,6 +35,7 @@ export default class MainPresenter {
   #noFilmsComponent = new FilmsListNoFilmsView();
 
   #films = [];
+  #renderedFilmCount = FILM_COUNT_PER_STEP;
 
   constructor(mainContainer) {
     this.#mainContainer = mainContainer;
@@ -50,9 +51,9 @@ export default class MainPresenter {
 
     if (this.#films.length === 0) {
       this.#renderNoFilms();
-    } else {
-      this.#renderFilmsBoard();
+      return;
     }
+    this.#renderFilmsBoard();
   }
 
   #renderNoFilms = () => {
@@ -95,23 +96,44 @@ export default class MainPresenter {
     }
 
     if (this.#films.length > FILM_COUNT_PER_STEP) {
-      let renderedFilmCount = FILM_COUNT_PER_STEP;
+      this.#renderedFilmCount = FILM_COUNT_PER_STEP;
 
-      render(this.#filmsListAllMoviesComponent, this.#showMoreButtonComponent, RenderPosition.BEFOREEND);
+      this.#renderShowMoreButton();
 
-      this.#showMoreButtonComponent.setClickHandler(() => {
-        this.#films
-          .slice(renderedFilmCount, renderedFilmCount + FILM_COUNT_PER_STEP)
-          .forEach((film) => this.#renderFilm(this.#filmsListAllComponent.element, film));
+      // render(this.#filmsListAllMoviesComponent, this.#showMoreButtonComponent, RenderPosition.BEFOREEND);
 
-        renderedFilmCount += FILM_COUNT_PER_STEP;
-
-        if (renderedFilmCount >= this.#films.length) {
-          this.#showMoreButtonComponent.element.remove();
-          this.#showMoreButtonComponent.removeElement();
-        }
-      });
+      // this.#showMoreButtonComponent.setClickHandler(() => {
+      //   // this.#films
+      //   //   .slice(this.#renderedFilmCount, this.#renderedFilmCount + FILM_COUNT_PER_STEP)
+      //   //   .forEach((film) => this.#renderFilm(this.#filmsListAllComponent.element, film));
+      //   //
+      //   // this.#renderedFilmCount += FILM_COUNT_PER_STEP;
+      //   //
+      //   // if (this.#renderedFilmCount >= this.#films.length) {
+      //   //   this.#showMoreButtonComponent.element.remove();
+      //   //   this.#showMoreButtonComponent.removeElement();
+      //   // }
+      // });
     }
+  }
+
+  #handleShowMoreButtonClick = () => {
+    this.#films
+      .slice(this.#renderedFilmCount, this.#renderedFilmCount + FILM_COUNT_PER_STEP)
+      .forEach((film) => this.#renderFilm(this.#filmsListAllComponent.element, film));
+
+    this.#renderedFilmCount += FILM_COUNT_PER_STEP;
+
+    if (this.#renderedFilmCount >= this.#films.length) {
+      this.#showMoreButtonComponent.element.remove();
+      this.#showMoreButtonComponent.removeElement();
+    }
+  }
+
+  #renderShowMoreButton = () => {
+    render(this.#filmsListAllMoviesComponent, this.#showMoreButtonComponent, RenderPosition.BEFOREEND);
+
+    this.#showMoreButtonComponent.setClickHandler(this.#handleShowMoreButtonClick);
   }
 
   #renderFilmsListRateMovies = () => {
