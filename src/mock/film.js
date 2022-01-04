@@ -1,3 +1,4 @@
+import {nanoid} from 'nanoid';
 import {generateComment} from './comment.js';
 import {getRandomInteger, getRandomiseArray} from '../utils/utils.js';
 
@@ -132,6 +133,7 @@ const generateComments = () => {
 
 
 export const generateFilm = () => ({
+  id: nanoid(),
   title: generateTitle(),
   alternativeTitle: generateFullTitle(),
   totalRating: 5.3,

@@ -8,7 +8,7 @@ const API = new APIMOCK();
 const films = API.getFilms();
 // const films = [];
 
-// console.log(films);
+console.log(films);
 
 // Header
 const siteHeaderElement = document.querySelector('.header');

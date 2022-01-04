@@ -1,5 +1,5 @@
 import MenuView from '../view/menu-view.js';
-import {render, RenderPosition} from '../utils/render.js';
+import {render, RenderPosition, remove} from '../utils/render.js';
 import SortView from '../view/sort-view.js';
 import FilmsListNoFilmsView from '../view/films-list-no-films-view.js';
 import FilmsBoardView from '../view/films-board-view.js';
@@ -11,7 +11,8 @@ import FilmCardView from '../view/film-card-view.js';
 import FilmPopupView from '../view/film-popup-view.js';
 import {BODY_HIDE_OVERFLOW_CLASS_NAME} from '../utils/const.js';
 import ShowMoreButtonView from '../view/show-more-button-view.js';
-import FilmPresenter from "./film-presenter";
+import FilmPresenter from './film-presenter';
+import {TypeFilmList} from '../utils/const.js';
 
 const FILM_COUNT_PER_STEP = 5;
 const FILM_COUNT_TOP_RATED = 2;
@@ -37,6 +38,9 @@ export default class MainPresenter {
 
   #films = [];
   #renderedFilmCount = FILM_COUNT_PER_STEP;
+  #filmPresenterAll = new Map();
+  #filmPresenterRate = new Map();
+  #filmPresenterComment = new Map();
 
   constructor(mainContainer) {
     this.#mainContainer = mainContainer;
@@ -91,9 +95,11 @@ export default class MainPresenter {
     render(this.#mainContainer, this.#sortComponent, RenderPosition.BEFOREEND);
   }
 
+
+
   #renderFilmsListAllMovies = () => {
     for (let i = 0; i < Math.min(this.#films.length, FILM_COUNT_PER_STEP); i++) {
-      this.#renderFilm(this.#filmsListAllComponent.element, this.#films[i]);
+      this.#renderFilm(this.#filmsListAllComponent.element, this.#films[i], TypeFilmList.ALL_MOVIES);
     }
 
     if (this.#films.length > FILM_COUNT_PER_STEP) {
@@ -125,19 +131,47 @@ export default class MainPresenter {
 
   #renderFilmsListRateMovies = () => {
     for (let i = 0; i < FILM_COUNT_TOP_RATED; i++) {
-      this.#renderFilm(this.#filmsListRateComponent.element, this.#films[i]);
+      this.#renderFilm(this.#filmsListRateComponent.element, this.#films[i], TypeFilmList.TOP_RATED);
     }
   }
 
   #renderFilmsListCommentMovies = () => {
     for (let i = 0; i < FILM_COUNT_MOST_COMMENTED; i++) {
-      this.#renderFilm(this.#filmsListCommentComponent.element, this.#films[i]);
+      this.#renderFilm(this.#filmsListCommentComponent.element, this.#films[i], TypeFilmList.MOST_COMMENTED);
     }
   }
 
-  #renderFilm = (filmListElement, film) => {
+  #clearFilmListAllMovies = () => {
+    this.#filmPresenterAll.forEach((presenter) => presenter.destroy());
+    this.#filmPresenterAll.clear();
+    this.#renderedFilmCount = FILM_COUNT_PER_STEP;
+    remove(this.#showMoreButtonComponent);
+  }
+
+  #clearFilmListRateMovies = () => {
+    this.#filmPresenterRate.forEach((presenter) => presenter.destroy());
+    this.#filmPresenterRate.clear();
+  }
+
+  #clearFilmListCommentMovies = () => {
+    this.#filmPresenterComment.forEach((presenter) => presenter.destroy());
+    this.#filmPresenterComment.clear();
+  }
+
+  #renderFilm = (filmListElement, film, typeFilmList) => {
     const filmPresenter = new FilmPresenter(filmListElement);
     filmPresenter.init(film);
+
+    if (typeFilmList === TypeFilmList.ALL_MOVIES) {
+      this.#filmPresenterAll.set(film.id, filmPresenter);
+    }
+    if (typeFilmList === TypeFilmList.TOP_RATED) {
+      this.#filmPresenterRate.set(film.id, filmPresenter);
+    }
+    if (typeFilmList === TypeFilmList.MOST_COMMENTED) {
+      this.#filmPresenterComment.set(film.id, filmPresenter);
+    }
+
   }
 
 }

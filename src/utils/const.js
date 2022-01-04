@@ -9,3 +9,9 @@ export const FilterType = {
   FAVORITES: 'favorites',
   STATS: 'stats',
 };
+
+export const TypeFilmList = {
+  ALL_MOVIES: 'all_movies',
+  TOP_RATED: 'top_rated',
+  MOST_COMMENTED: 'most_commented',
+};
