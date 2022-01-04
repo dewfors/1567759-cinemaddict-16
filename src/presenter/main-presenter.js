@@ -7,12 +7,14 @@ import FilmsListAllMoviesView from '../view/films-list-all-movies-view.js';
 import FilmsListContainerView from '../view/films-list-container-view.js';
 import FilmsListTopRatedView from '../view/films-list-top-rated-view.js';
 import FilmsListMostCommentedView from '../view/films-list-most-commented-view.js';
-import FilmCardView from '../view/film-card-view.js';
-import FilmPopupView from '../view/film-popup-view.js';
-import {BODY_HIDE_OVERFLOW_CLASS_NAME} from '../utils/const.js';
+// import FilmCardView from '../view/film-card-view.js';
+// import FilmPopupView from '../view/film-popup-view.js';
+// import {BODY_HIDE_OVERFLOW_CLASS_NAME} from '../utils/const.js';
 import ShowMoreButtonView from '../view/show-more-button-view.js';
 import FilmPresenter from './film-presenter';
 import {TypeFilmList} from '../utils/const.js';
+import {updateItem} from '../utils/common.js';
+
 
 const FILM_COUNT_PER_STEP = 5;
 const FILM_COUNT_TOP_RATED = 2;
@@ -61,6 +63,20 @@ export default class MainPresenter {
     this.#renderFilmsBoard();
   }
 
+  #handleFilmChange = (updatedFilm) => {
+    this.#films = updateItem(this.#films, updatedFilm);
+
+    if (this.#filmPresenterAll.has(updatedFilm.id)) {
+      this.#filmPresenterAll.get(updatedFilm.id).init(updatedFilm);
+    }
+    if (this.#filmPresenterRate.has(updatedFilm.id)) {
+      this.#filmPresenterRate.get(updatedFilm.id).init(updatedFilm);
+    }
+    if (this.#filmPresenterComment.has(updatedFilm.id)) {
+      this.#filmPresenterComment.get(updatedFilm.id).init(updatedFilm);
+    }
+  }
+
   #renderNoFilms = () => {
     render(this.#mainContainer, this.#filmsComponent, RenderPosition.BEFOREEND);
     render(this.#filmsComponent, this.#noFilmsComponent, RenderPosition.BEFOREEND);
@@ -94,8 +110,6 @@ export default class MainPresenter {
     // Метод для рендеринга сортировки
     render(this.#mainContainer, this.#sortComponent, RenderPosition.BEFOREEND);
   }
-
-
 
   #renderFilmsListAllMovies = () => {
     for (let i = 0; i < Math.min(this.#films.length, FILM_COUNT_PER_STEP); i++) {
