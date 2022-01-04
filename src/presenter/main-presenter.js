@@ -11,6 +11,7 @@ import FilmCardView from '../view/film-card-view.js';
 import FilmPopupView from '../view/film-popup-view.js';
 import {BODY_HIDE_OVERFLOW_CLASS_NAME} from '../utils/const.js';
 import ShowMoreButtonView from '../view/show-more-button-view.js';
+import FilmPresenter from "./film-presenter";
 
 const FILM_COUNT_PER_STEP = 5;
 const FILM_COUNT_TOP_RATED = 2;
@@ -100,20 +101,6 @@ export default class MainPresenter {
 
       this.#renderShowMoreButton();
 
-      // render(this.#filmsListAllMoviesComponent, this.#showMoreButtonComponent, RenderPosition.BEFOREEND);
-
-      // this.#showMoreButtonComponent.setClickHandler(() => {
-      //   // this.#films
-      //   //   .slice(this.#renderedFilmCount, this.#renderedFilmCount + FILM_COUNT_PER_STEP)
-      //   //   .forEach((film) => this.#renderFilm(this.#filmsListAllComponent.element, film));
-      //   //
-      //   // this.#renderedFilmCount += FILM_COUNT_PER_STEP;
-      //   //
-      //   // if (this.#renderedFilmCount >= this.#films.length) {
-      //   //   this.#showMoreButtonComponent.element.remove();
-      //   //   this.#showMoreButtonComponent.removeElement();
-      //   // }
-      // });
     }
   }
 
@@ -149,38 +136,8 @@ export default class MainPresenter {
   }
 
   #renderFilm = (filmListElement, film) => {
-    const filmComponent = new FilmCardView(film);
-    const filmPopupComponent = new FilmPopupView(film);
-
-    const showFilmPopup = () => {
-      document.body.appendChild(filmPopupComponent.element);
-      document.body.classList.add(BODY_HIDE_OVERFLOW_CLASS_NAME);
-    };
-
-    const hideFilmPopup = () => {
-      document.body.removeChild(filmPopupComponent.element);
-      document.body.classList.remove(BODY_HIDE_OVERFLOW_CLASS_NAME);
-    };
-
-    const onEscKeyDown = (evt) => {
-      if (evt.key === 'Escape' || evt.key === 'Esc') {
-        evt.preventDefault();
-        hideFilmPopup();
-        document.removeEventListener('keydown', onEscKeyDown);
-      }
-    };
-
-    filmComponent.setShowPopupClickHandler(() => {
-      showFilmPopup();
-      document.addEventListener('keydown', onEscKeyDown);
-    });
-
-    filmPopupComponent.setClosePopupClickHandler(() => {
-      hideFilmPopup();
-      document.removeEventListener('keydown', onEscKeyDown);
-    });
-
-    render(filmListElement, filmComponent, RenderPosition.BEFOREEND);
+    const filmPresenter = new FilmPresenter(filmListElement);
+    filmPresenter.init(film);
   }
 
 }
