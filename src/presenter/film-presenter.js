@@ -2,18 +2,21 @@ import FilmCardView from '../view/film-card-view.js';
 import FilmPopupView from '../view/film-popup-view.js';
 import {BODY_HIDE_OVERFLOW_CLASS_NAME} from '../utils/const.js';
 import {render, RenderPosition, replace, remove} from '../utils/render.js';
+import {TypeControls} from "../utils/const";
 
 
 export default class FilmPresenter {
   #filmListContainer = null;
+  #changeData = null;
 
   #filmComponent = null;
   #filmPopupComponent = null;
 
   #film = null;
 
-  constructor(filmListContainer) {
+  constructor(filmListContainer, changeData) {
     this.#filmListContainer = filmListContainer;
+    this.#changeData = changeData;
   }
 
   init = (film) => {
@@ -26,6 +29,8 @@ export default class FilmPresenter {
     this.#filmPopupComponent = new FilmPopupView(film);
 
     this.#filmComponent.setShowPopupClickHandler(this.#handleShowPopupClick);
+    // this.#filmComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
+    this.#filmComponent.setControlsClickHandler(this.#handleControlsClick);
     this.#filmPopupComponent.setClosePopupClickHandler(this.#handleClosePopupClick);
 
     if (prevFilmComponent === null || prevFilmPopupComponent === null) {
@@ -35,7 +40,8 @@ export default class FilmPresenter {
 
     // Проверка на наличие в DOM необходима,
     // чтобы не пытаться заменить то, что не было отрисовано
-    if (this.#filmListContainer.element.contains(prevFilmComponent.element)) {
+    // if (this.#filmListContainer.element.contains(prevFilmComponent.element)) {
+    if (this.#filmListContainer.contains(prevFilmComponent.element)) {
       replace(this.#filmComponent, prevFilmComponent);
     }
 
@@ -79,6 +85,29 @@ export default class FilmPresenter {
   #handleClosePopupClick = () => {
     this.#hideFilmPopup();
     document.removeEventListener('keydown', this.#onEscKeyDown);
+  }
+
+  // #handleFavoriteClick = () => {
+  //   const userDetails = {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite};
+  //   this.#changeData({...this.#film, userDetails: userDetails});
+  // }
+
+  #handleControlsClick = (buttonType) => {
+    let userDetails = {};
+
+    switch (buttonType) {
+      case TypeControls.WATCHLIST:
+        userDetails = {...this.#film.userDetails, watchlist: !this.#film.userDetails.watchlist};
+        break;
+      case TypeControls.WATCHED:
+        userDetails = {...this.#film.userDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched};
+        break;
+      case TypeControls.FAVORITE:
+        userDetails = {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite};
+        break;
+    }
+
+    this.#changeData({...this.#film, userDetails: userDetails});
   }
 
 }

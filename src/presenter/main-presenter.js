@@ -127,7 +127,7 @@ export default class MainPresenter {
   #handleShowMoreButtonClick = () => {
     this.#films
       .slice(this.#renderedFilmCount, this.#renderedFilmCount + FILM_COUNT_PER_STEP)
-      .forEach((film) => this.#renderFilm(this.#filmsListAllComponent.element, film));
+      .forEach((film) => this.#renderFilm(this.#filmsListAllComponent.element, film, TypeFilmList.ALL_MOVIES));
 
     this.#renderedFilmCount += FILM_COUNT_PER_STEP;
 
@@ -173,7 +173,7 @@ export default class MainPresenter {
   }
 
   #renderFilm = (filmListElement, film, typeFilmList) => {
-    const filmPresenter = new FilmPresenter(filmListElement);
+    const filmPresenter = new FilmPresenter(filmListElement, this.#handleFilmChange);
     filmPresenter.init(film);
 
     if (typeFilmList === TypeFilmList.ALL_MOVIES) {

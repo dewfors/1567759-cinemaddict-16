@@ -15,3 +15,9 @@ export const TypeFilmList = {
   TOP_RATED: 'top_rated',
   MOST_COMMENTED: 'most_commented',
 };
+
+export const TypeControls = {
+  WATCHLIST: 'watchlist',
+  WATCHED: 'watched',
+  FAVORITE: 'favorite',
+};
