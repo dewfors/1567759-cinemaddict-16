@@ -1,7 +1,7 @@
 import FilmCardView from '../view/film-card-view.js';
 import FilmPopupView from '../view/film-popup-view.js';
 import {BODY_HIDE_OVERFLOW_CLASS_NAME} from '../utils/const.js';
-import {render, RenderPosition} from '../utils/render.js';
+import {render, RenderPosition, replace, remove} from '../utils/render.js';
 
 
 export default class FilmPresenter {
@@ -19,13 +19,38 @@ export default class FilmPresenter {
   init = (film) => {
     this.#film = film;
 
+    const prevFilmComponent = this.#filmComponent;
+    const prevFilmPopupComponent = this.#filmPopupComponent;
+
     this.#filmComponent = new FilmCardView(film);
     this.#filmPopupComponent = new FilmPopupView(film);
 
     this.#filmComponent.setShowPopupClickHandler(this.#handleShowPopupClick);
     this.#filmPopupComponent.setClosePopupClickHandler(this.#handleClosePopupClick);
 
-    render(this.#filmListContainer, this.#filmComponent, RenderPosition.BEFOREEND);
+    if (prevFilmComponent === null || prevFilmPopupComponent === null) {
+      render(this.#filmListContainer, this.#filmComponent, RenderPosition.BEFOREEND);
+      return;
+    }
+
+    // Проверка на наличие в DOM необходима,
+    // чтобы не пытаться заменить то, что не было отрисовано
+    if (this.#filmListContainer.element.contains(prevFilmComponent.element)) {
+      replace(this.#filmComponent, prevFilmComponent);
+    }
+
+    if (document.body.contains(prevFilmPopupComponent.element)) {
+      replace(this.#filmPopupComponent, prevFilmPopupComponent);
+    }
+
+    remove(prevFilmComponent);
+    remove(prevFilmPopupComponent);
+
+  }
+
+  destroy = () => {
+    remove(this.#filmComponent);
+    remove(this.#filmPopupComponent);
   }
 
   #showFilmPopup = () => {
