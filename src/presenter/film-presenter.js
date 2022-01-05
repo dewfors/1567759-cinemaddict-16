@@ -1,22 +1,28 @@
 import FilmCardView from '../view/film-card-view.js';
 import FilmPopupView from '../view/film-popup-view.js';
-import {BODY_HIDE_OVERFLOW_CLASS_NAME} from '../utils/const.js';
+import {BODY_HIDE_OVERFLOW_CLASS_NAME, TypeControls} from '../utils/const.js';
 import {render, RenderPosition, replace, remove} from '../utils/render.js';
-import {TypeControls} from "../utils/const";
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  POPUP: 'POPUP',
+};
 
 export default class FilmPresenter {
   #filmListContainer = null;
   #changeData = null;
+  #changeMode = null;
 
   #filmComponent = null;
   #filmPopupComponent = null;
 
   #film = null;
+  #mode = Mode.DEFAULT;
 
-  constructor(filmListContainer, changeData) {
+  constructor(filmListContainer, changeData, changeMode) {
     this.#filmListContainer = filmListContainer;
     this.#changeData = changeData;
+    this.#changeMode = changeMode;
   }
 
   init = (film) => {
@@ -29,7 +35,6 @@ export default class FilmPresenter {
     this.#filmPopupComponent = new FilmPopupView(film);
 
     this.#filmComponent.setShowPopupClickHandler(this.#handleShowPopupClick);
-    // this.#filmComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#filmComponent.setControlsClickHandler(this.#handleControlsClick);
     this.#filmPopupComponent.setClosePopupClickHandler(this.#handleClosePopupClick);
 
@@ -38,14 +43,11 @@ export default class FilmPresenter {
       return;
     }
 
-    // Проверка на наличие в DOM необходима,
-    // чтобы не пытаться заменить то, что не было отрисовано
-    // if (this.#filmListContainer.element.contains(prevFilmComponent.element)) {
-    if (this.#filmListContainer.contains(prevFilmComponent.element)) {
+    if (this.#mode === Mode.DEFAULT) {
       replace(this.#filmComponent, prevFilmComponent);
     }
 
-    if (document.body.contains(prevFilmPopupComponent.element)) {
+    if (this.#mode === Mode.POPUP) {
       replace(this.#filmPopupComponent, prevFilmPopupComponent);
     }
 
@@ -59,14 +61,25 @@ export default class FilmPresenter {
     remove(this.#filmPopupComponent);
   }
 
+  resetView = () => {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#hideFilmPopup();
+    }
+  }
+
   #showFilmPopup = () => {
+    this.#changeMode();
+    this.#mode = Mode.POPUP;
     document.body.appendChild(this.#filmPopupComponent.element);
     document.body.classList.add(BODY_HIDE_OVERFLOW_CLASS_NAME);
   };
 
   #hideFilmPopup = () => {
-    document.body.removeChild(this.#filmPopupComponent.element);
-    document.body.classList.remove(BODY_HIDE_OVERFLOW_CLASS_NAME);
+    if (document.body.contains(this.#filmPopupComponent.element)) {
+      document.body.removeChild(this.#filmPopupComponent.element);
+      document.body.classList.remove(BODY_HIDE_OVERFLOW_CLASS_NAME);
+    }
+    this.#mode = Mode.DEFAULT;
   };
 
   #onEscKeyDown = (evt) => {
@@ -87,11 +100,6 @@ export default class FilmPresenter {
     document.removeEventListener('keydown', this.#onEscKeyDown);
   }
 
-  // #handleFavoriteClick = () => {
-  //   const userDetails = {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite};
-  //   this.#changeData({...this.#film, userDetails: userDetails});
-  // }
-
   #handleControlsClick = (buttonType) => {
     let userDetails = {};
 
@@ -106,7 +114,6 @@ export default class FilmPresenter {
         userDetails = {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite};
         break;
     }
-
     this.#changeData({...this.#film, userDetails: userDetails});
   }
 

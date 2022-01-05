@@ -7,9 +7,6 @@ import FilmsListAllMoviesView from '../view/films-list-all-movies-view.js';
 import FilmsListContainerView from '../view/films-list-container-view.js';
 import FilmsListTopRatedView from '../view/films-list-top-rated-view.js';
 import FilmsListMostCommentedView from '../view/films-list-most-commented-view.js';
-// import FilmCardView from '../view/film-card-view.js';
-// import FilmPopupView from '../view/film-popup-view.js';
-// import {BODY_HIDE_OVERFLOW_CLASS_NAME} from '../utils/const.js';
 import ShowMoreButtonView from '../view/show-more-button-view.js';
 import FilmPresenter from './film-presenter';
 import {TypeFilmList} from '../utils/const.js';
@@ -61,6 +58,12 @@ export default class MainPresenter {
       return;
     }
     this.#renderFilmsBoard();
+  }
+
+  #handleModeChange = () => {
+    this.#filmPresenterAll.forEach((presenter) => presenter.resetView());
+    this.#filmPresenterRate.forEach((presenter) => presenter.resetView());
+    this.#filmPresenterComment.forEach((presenter) => presenter.resetView());
   }
 
   #handleFilmChange = (updatedFilm) => {
@@ -120,7 +123,6 @@ export default class MainPresenter {
       this.#renderedFilmCount = FILM_COUNT_PER_STEP;
 
       this.#renderShowMoreButton();
-
     }
   }
 
@@ -173,7 +175,7 @@ export default class MainPresenter {
   }
 
   #renderFilm = (filmListElement, film, typeFilmList) => {
-    const filmPresenter = new FilmPresenter(filmListElement, this.#handleFilmChange);
+    const filmPresenter = new FilmPresenter(filmListElement, this.#handleFilmChange, this.#handleModeChange);
     filmPresenter.init(film);
 
     if (typeFilmList === TypeFilmList.ALL_MOVIES) {
