@@ -21,3 +21,9 @@ export const TypeControls = {
   WATCHED: 'watched',
   FAVORITE: 'favorite',
 };
+
+export const SortType = {
+  DEFAULT: 'default',
+  DATE: 'date',
+  RATING: 'rating',
+};
