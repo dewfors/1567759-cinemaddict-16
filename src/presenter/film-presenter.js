@@ -35,8 +35,9 @@ export default class FilmPresenter {
     this.#filmPopupComponent = new FilmPopupView(film);
 
     this.#filmComponent.setShowPopupClickHandler(this.#handleShowPopupClick);
-    this.#filmComponent.setControlsClickHandler(this.#handleControlsClick);
     this.#filmPopupComponent.setClosePopupClickHandler(this.#handleClosePopupClick);
+    this.#filmComponent.setControlsClickHandler(this.#handleControlsClick);
+    this.#filmPopupComponent.setControlsClickHandler(this.#handleControlsClick);
 
     if (prevFilmComponent === null || prevFilmPopupComponent === null) {
       render(this.#filmListContainer, this.#filmComponent, RenderPosition.BEFOREEND);

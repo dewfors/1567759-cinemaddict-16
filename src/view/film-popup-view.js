@@ -1,5 +1,12 @@
 import AbstractView from './abstract-view.js';
 import {formatDate, getTimeDuration} from '../utils/common.js';
+import {TypeControls} from '../utils/const.js';
+
+const getClassNameActive = (flag) => {
+  return flag
+    ? 'film-details__control-button--active'
+    : '';
+};
 
 export const createFilmPopupTemplate = (film) => {
 
@@ -16,6 +23,9 @@ export const createFilmPopupTemplate = (film) => {
   const hours = getTimeDuration(runtime).hours();
   const minutes = getTimeDuration(runtime).minutes();
 
+  const watchlistClassName = getClassNameActive(film.userDetails.watchlist);
+  const watchedClassName = getClassNameActive(film.userDetails.alreadyWatched);
+  const favoriteClassName = getClassNameActive(film.userDetails.favorite);
 
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
@@ -82,9 +92,9 @@ export const createFilmPopupTemplate = (film) => {
       </div>
 
       <section class="film-details__controls">
-        <button type="button" class="film-details__control-button film-details__control-button--watchlist" id="watchlist" name="watchlist">Add to watchlist</button>
-        <button type="button" class="film-details__control-button film-details__control-button--active film-details__control-button--watched" id="watched" name="watched">Already watched</button>
-        <button type="button" class="film-details__control-button film-details__control-button--favorite" id="favorite" name="favorite">Add to favorites</button>
+        <button type="button" class="film-details__control-button film-details__control-button--watchlist ${watchlistClassName}" id="watchlist" name="watchlist" data-type="watchlist">Add to watchlist</button>
+        <button type="button" class="film-details__control-button film-details__control-button--watched ${watchedClassName}" id="watched" name="watched" data-type="watched">Already watched</button>
+        <button type="button" class="film-details__control-button film-details__control-button--favorite ${favoriteClassName}" id="favorite" name="favorite" data-type="favorite">Add to favorites</button>
       </section>
     </div>
 
@@ -168,6 +178,32 @@ export default class FilmPopupView extends AbstractView{
   #closePopupClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.closePopup();
+  }
+
+  setControlsClickHandler = (callback) => {
+    this._callback.controlsClick = callback;
+    this.element.querySelector('.film-details__controls').addEventListener('click', this.#controlsClickHandler);
+  }
+
+  #controlsClickHandler = (evt) => {
+    evt.preventDefault();
+
+    const buttonType = evt.target.dataset.type;
+    if (!buttonType) {
+      return;
+    }
+
+    switch (buttonType) {
+      case TypeControls.WATCHLIST:
+        this._callback.controlsClick(TypeControls.WATCHLIST);
+        break;
+      case TypeControls.WATCHED:
+        this._callback.controlsClick(TypeControls.WATCHED);
+        break;
+      case TypeControls.FAVORITE:
+        this._callback.controlsClick(TypeControls.FAVORITE);
+        break;
+    }
   }
 
 }
