@@ -2,11 +2,7 @@ import AbstractView from './abstract-view.js';
 import {formatDate, getTimeDuration} from '../utils/common.js';
 import {TypeControls} from '../utils/const.js';
 
-const getClassNameActive = (flag) => {
-  return flag
-    ? 'film-details__control-button--active'
-    : '';
-};
+const getClassNameActive = (flag) => flag ? 'film-details__control-button--active' : '';
 
 export const createFilmPopupTemplate = (film) => {
 

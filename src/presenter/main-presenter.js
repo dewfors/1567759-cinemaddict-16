@@ -9,10 +9,9 @@ import FilmsListTopRatedView from '../view/films-list-top-rated-view.js';
 import FilmsListMostCommentedView from '../view/films-list-most-commented-view.js';
 import ShowMoreButtonView from '../view/show-more-button-view.js';
 import FilmPresenter from './film-presenter';
-import {TypeFilmList} from '../utils/const.js';
+import {TypeFilmList, SortType} from '../utils/const.js';
 import {updateItem} from '../utils/common.js';
-import {SortType} from "../utils/const";
-import {sortFilmsByDate, sortFilmsByRating} from "../utils/film";
+import {sortFilmsByDate, sortFilmsByRating} from '../utils/film.js';
 
 
 const FILM_COUNT_PER_STEP = 5;
@@ -148,6 +147,8 @@ export default class MainPresenter {
   }
 
   #renderSort = () => {
+    this.#sortComponent = new SortView(this.#currentSortType);
+
     // Метод для рендеринга сортировки
     render(this.#mainContainer, this.#sortComponent, RenderPosition.BEFOREEND);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);

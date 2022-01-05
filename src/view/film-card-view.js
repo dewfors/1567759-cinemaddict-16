@@ -2,11 +2,7 @@ import AbstractView from './abstract-view.js';
 import {formatDate, getTimeDuration} from '../utils/common.js';
 import {SHORT_DESCRIPTION_MAX_LENGTH, TypeControls} from '../utils/const.js';
 
-const getClassNameActive = (flag) => {
-  return flag
-    ? 'film-card__controls-item--active'
-    : '';
-};
+const getClassNameActive = (flag) => flag ? 'film-card__controls-item--active' : '';
 
 const createFilmCardTemplate = (film) => {
   const {title, totalRating, release, runtime, genre, description, poster} = film;
