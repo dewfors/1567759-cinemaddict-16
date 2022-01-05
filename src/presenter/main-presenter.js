@@ -109,9 +109,19 @@ export default class MainPresenter {
     render(this.#mainContainer, menuComponent, RenderPosition.BEFOREEND);
   }
 
+  #handleSortTypeChange = (sortType) => {
+
+    console.log(sortType);
+
+    // - Сортируем задачи
+    // - Очищаем список
+    // - Рендерим список заново
+  }
+
   #renderSort = () => {
     // Метод для рендеринга сортировки
     render(this.#mainContainer, this.#sortComponent, RenderPosition.BEFOREEND);
+    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   }
 
   #renderFilmsListAllMovies = () => {
