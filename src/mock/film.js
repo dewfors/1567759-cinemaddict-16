@@ -113,7 +113,7 @@ const generateDescription = () => {
 };
 
 const generateDate = () => {
-  const daysGap = getRandomInteger(31, 365);
+  const daysGap = getRandomInteger(31, 720);
   return (
     Date.now() - Math.floor(Math.random() * daysGap) * 24 * 60 * 60 * 1000
   );
@@ -136,7 +136,7 @@ export const generateFilm = () => ({
   id: nanoid(),
   title: generateTitle(),
   alternativeTitle: generateFullTitle(),
-  totalRating: 5.3,
+  totalRating: getRandomInteger(1, 9),
   poster: `images/posters/${generatePoster()}`,
   ageRating: 3,
   director: generateDirector(),

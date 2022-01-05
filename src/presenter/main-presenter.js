@@ -11,6 +11,8 @@ import ShowMoreButtonView from '../view/show-more-button-view.js';
 import FilmPresenter from './film-presenter';
 import {TypeFilmList} from '../utils/const.js';
 import {updateItem} from '../utils/common.js';
+import {SortType} from "../utils/const";
+import {sortFilmsByDate, sortFilmsByRating} from "../utils/film";
 
 
 const FILM_COUNT_PER_STEP = 5;
@@ -21,9 +23,7 @@ export default class MainPresenter {
   #mainContainer = null;
 
   #sortComponent = new SortView();
-
   #filmsComponent = new FilmsBoardView();
-
   #filmsListAllMoviesComponent = new FilmsListAllMoviesView();
   #filmsListAllComponent = new FilmsListContainerView();
   #filmsListTopRatedComponent = new FilmsListTopRatedView();
@@ -41,12 +41,16 @@ export default class MainPresenter {
   #filmPresenterRate = new Map();
   #filmPresenterComment = new Map();
 
+  #currentSortType = SortType.DEFAULT;
+  #sourcedFilms = [];
+
   constructor(mainContainer) {
     this.#mainContainer = mainContainer;
   }
 
   init = (films) => {
     this.#films = [...films];
+    this.#sourcedFilms = [...films];
     this.#renderBoard();
   }
 
@@ -68,6 +72,7 @@ export default class MainPresenter {
 
   #handleFilmChange = (updatedFilm) => {
     this.#films = updateItem(this.#films, updatedFilm);
+    this.#sourcedFilms = updateItem(this.#films, updatedFilm);
 
     if (this.#filmPresenterAll.has(updatedFilm.id)) {
       this.#filmPresenterAll.get(updatedFilm.id).init(updatedFilm);
@@ -109,13 +114,37 @@ export default class MainPresenter {
     render(this.#mainContainer, menuComponent, RenderPosition.BEFOREEND);
   }
 
+
+  #sortFilms = (sortType) => {
+
+    switch (sortType) {
+      case SortType.DATE:
+        this.#films.sort(sortFilmsByDate);
+        break;
+      case SortType.RATING:
+        this.#films.sort(sortFilmsByRating);
+        break;
+      default:
+        this.#films = [...this.#sourcedFilms];
+    }
+
+    this.#currentSortType = sortType;
+  }
+
   #handleSortTypeChange = (sortType) => {
 
-    console.log(sortType);
+    if (this.#currentSortType === sortType) {
+      return;
+    }
 
     // - Сортируем задачи
+    this.#sortFilms(sortType);
+
+
     // - Очищаем список
+    this.#clearFilmListAllMovies();
     // - Рендерим список заново
+    this.#renderFilmsListAllMovies();
   }
 
   #renderSort = () => {
