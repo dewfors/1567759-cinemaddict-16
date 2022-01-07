@@ -1,15 +1,21 @@
-import AbstractView from './abstract-view.js';
+import SmartView from './smart-view.js';
 import {formatDate, getTimeDuration} from '../utils/common.js';
 import {TypeControls} from '../utils/const.js';
 
+
 const getClassNameActive = (flag) => flag ? 'film-details__control-button--active' : '';
+const emojiList = ['smile','sleeping','puke','angry'];
 
 export const createFilmPopupTemplate = (film) => {
+
+  // console.log(film);
 
   const {
     title, alternativeTitle, totalRating, release, runtime,
     genre, description, poster, ageRating, director, writers,
-    actors} = film;
+    actors, currentCommentEmoji} = film;
+
+  const currentEmoji = currentCommentEmoji ? currentCommentEmoji : '';
 
   const filmComments = film.comments;
 
@@ -118,32 +124,41 @@ export const createFilmPopupTemplate = (film) => {
         </ul>
 
         <div class="film-details__new-comment">
-          <div class="film-details__add-emoji-label"></div>
+          <div class="film-details__add-emoji-label">
+            ${currentEmoji ? `<img src="images/emoji/${currentEmoji}.png" width="55" height="55" alt="emoji-smile">` : ''}
+          </div>
 
           <label class="film-details__comment-label">
             <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
           </label>
 
           <div class="film-details__emoji-list">
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
-            <label class="film-details__emoji-label" for="emoji-smile">
-              <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
-            </label>
+            ${emojiList.map((emojiItem) => `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emojiItem}" value="${emojiItem}" ${emojiItem === currentCommentEmoji ? 'checked' : ''}>
+              <label class="film-details__emoji-label" for="emoji-${emojiItem}">
+                <img src="./images/emoji/${emojiItem}.png" width="30" height="30" alt="emoji">
+              </label>`).join('')}
 
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
-            <label class="film-details__emoji-label" for="emoji-sleeping">
-              <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
-            </label>
 
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
-            <label class="film-details__emoji-label" for="emoji-puke">
-              <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
-            </label>
 
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
-            <label class="film-details__emoji-label" for="emoji-angry">
-              <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
-            </label>
+<!--            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">-->
+<!--            <label class="film-details__emoji-label" for="emoji-smile">-->
+<!--              <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">-->
+<!--            </label>-->
+
+<!--            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">-->
+<!--            <label class="film-details__emoji-label" for="emoji-sleeping">-->
+<!--              <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">-->
+<!--            </label>-->
+
+<!--            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">-->
+<!--            <label class="film-details__emoji-label" for="emoji-puke">-->
+<!--              <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">-->
+<!--            </label>-->
+
+<!--            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">-->
+<!--            <label class="film-details__emoji-label" for="emoji-angry">-->
+<!--              <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">-->
+<!--            </label>-->
           </div>
         </div>
       </section>
@@ -154,16 +169,18 @@ export const createFilmPopupTemplate = (film) => {
 };
 
 
-export default class FilmPopupView extends AbstractView{
+export default class FilmPopupView extends SmartView{
   #film = null;
 
   constructor(film) {
     super();
-    this.#film = film;
+    // this.#film = film;
+    this._data = FilmPopupView.parseFilmToData(film);
+    this.#setInnerHandlers();
   }
 
   get template() {
-    return createFilmPopupTemplate(this.#film);
+    return createFilmPopupTemplate(this._data);
   }
 
   setClosePopupClickHandler = (callback) => {
@@ -200,6 +217,62 @@ export default class FilmPopupView extends AbstractView{
         this._callback.controlsClick(TypeControls.FAVORITE);
         break;
     }
+  }
+
+  restoreHandlers = () => {
+    this.#setInnerHandlers();
+  }
+
+
+
+  #setInnerHandlers = () => {
+    this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#handlerCommentEmojiChange);
+    this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#handlerCommentTextInput);
+    this.element.addEventListener('keydown', this.#handlerCommentSend);
+  }
+
+  #handlerCommentEmojiChange = (evt) => {
+    evt.preventDefault();
+    this.updateData({currentCommentEmoji: evt.target.value});
+  }
+
+  #handlerCommentTextInput = (evt) => {
+    evt.preventDefault();
+    this.updateData({currentCommentText: evt.target.value}, true);
+  }
+
+  #handlerCommentSend = (evt) => {
+    if ((evt.ctrlKey || evt.metaKey) && evt.key === 'Enter') {
+
+      if (!this._data.currentCommentEmoji || !this._data.currentCommentText) {
+        return;
+      }
+
+      const newComment = {
+        id: '',
+        comment: this._data.currentCommentText,
+        emotion: this._data.currentCommentEmoji,
+      };
+
+      // console.log(newComment);
+
+      // надо записать новый комментарий
+
+    }
+  }
+
+
+  static parseFilmToData = (film) => ({...film,
+  });
+
+  static parseDataToFilm = (data) => {
+    const film = {...data};
+
+
+    delete film.currentCommentEmoji;
+    // delete film.isRepeating;
+
+    return film;
   }
 
 }
