@@ -3,10 +3,14 @@ import ProfileView from './view/profile-view.js';
 import FilmsStatisticsView from './view/films-statistics-view.js';
 import APIMOCK from './mock/mockService.js';
 import MainPresenter from './presenter/main-presenter.js';
+import FilmsModel from './model/films-model.js';
 
 const API = new APIMOCK();
 const films = API.getFilms();
 // const films = [];
+
+const filmsModel = new FilmsModel();
+filmsModel.tasks = films;
 
 // Header
 const siteHeaderElement = document.querySelector('.header');
@@ -29,7 +33,7 @@ const renderFooter = () => {
 
 renderHeader();
 
-const mainPresenter = new MainPresenter(siteMainElement);
+const mainPresenter = new MainPresenter(siteMainElement, filmsModel);
 mainPresenter.init(films);
 
 renderFooter();

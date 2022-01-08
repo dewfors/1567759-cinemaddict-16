@@ -20,6 +20,7 @@ const FILM_COUNT_MOST_COMMENTED = 2;
 
 export default class MainPresenter {
   #mainContainer = null;
+  #filmsModel = null;
 
   #sortComponent = new SortView();
   #filmsComponent = new FilmsBoardView();
@@ -43,8 +44,13 @@ export default class MainPresenter {
   #currentSortType = SortType.DEFAULT;
   #sourcedFilms = [];
 
-  constructor(mainContainer) {
+  constructor(mainContainer, filmsModel) {
     this.#mainContainer = mainContainer;
+    this.#filmsModel = filmsModel;
+  }
+
+  get films() {
+    return this.#filmsModel.films;
   }
 
   init = (films) => {
