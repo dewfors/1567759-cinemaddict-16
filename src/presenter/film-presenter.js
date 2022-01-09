@@ -118,7 +118,7 @@ export default class FilmPresenter {
     }
     this.#changeData(
       UserAction.UPDATE_FILM,
-      UpdateType.MINOR,
+      UpdateType.MAJOR,
       {...this.#film, userDetails: userDetails},
     );
   }

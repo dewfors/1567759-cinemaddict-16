@@ -13,6 +13,7 @@ import {TypeFilmList, SortType} from '../utils/const.js';
 import {updateItem} from '../utils/common.js';
 import {sortFilmsByDate, sortFilmsByRating} from '../utils/film.js';
 import SortPresenter from "./sort-presenter";
+import {UpdateType, UserAction} from "../utils/const";
 
 
 const FILM_COUNT_PER_STEP = 5;
@@ -93,14 +94,37 @@ export default class MainPresenter {
     // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
     // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
     // update - обновленные данные
+
+    switch (actionType) {
+      case UserAction.UPDATE_FILM:
+        this.#filmsModel.updateFilm(updateType, update);
+        break;
+      case UserAction.ADD_COMMENT:
+        //this.#filmsModel.addComment(updateType, update);
+        break;
+      case UserAction.DELETE_COMMENT:
+        //this.#filmsModel.deleteComment(updateType, update);
+        break;
+    }
   }
 
   #handleModelEvent = (updateType, data) => {
     console.log(updateType, data);
     // В зависимости от типа изменений решаем, что делать:
-    // - обновить часть списка (например, когда поменялось описание)
-    // - обновить список (например, когда задача ушла в архив)
-    // - обновить всю доску (например, при переключении фильтра)
+    // - PATCH обновить часть списка (например, когда поменялись комментарии)
+    // - MINOR обновить список (например, при добавлении в избранное)
+    // - MAJOR обновить всю доску (при переключении фильтра)
+
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this.#handleFilmChange(data);
+        break;
+      case UpdateType.MINOR:
+        break;
+      case UpdateType.MAJOR:
+        break;
+    }
+
   }
 
 
