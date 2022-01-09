@@ -12,6 +12,7 @@ import FilmPresenter from './film-presenter';
 import {TypeFilmList, SortType} from '../utils/const.js';
 import {updateItem} from '../utils/common.js';
 import {sortFilmsByDate, sortFilmsByRating} from '../utils/film.js';
+import SortPresenter from "./sort-presenter";
 
 
 const FILM_COUNT_PER_STEP = 5;
@@ -22,7 +23,7 @@ export default class MainPresenter {
   #mainContainer = null;
   #filmsModel = null;
 
-  #sortComponent = new SortView();
+  // #sortComponent = new SortView();
   #filmsComponent = new FilmsBoardView();
   #filmsListAllMoviesComponent = new FilmsListAllMoviesView();
   #filmsListAllComponent = new FilmsListContainerView();
@@ -36,6 +37,7 @@ export default class MainPresenter {
   #noFilmsComponent = new FilmsListNoFilmsView();
 
   // #films = [];
+  #sortPresenter = null;
   #renderedFilmCount = FILM_COUNT_PER_STEP;
   #filmPresenterAll = new Map();
   #filmPresenterRate = new Map();
@@ -107,6 +109,7 @@ export default class MainPresenter {
 
   #renderFilmsBoard = () => {
     this.#renderSort();
+
     render(this.#mainContainer, this.#filmsComponent, RenderPosition.BEFOREEND);
 
     render(this.#filmsComponent, this.#filmsListAllMoviesComponent, RenderPosition.BEFOREEND);
@@ -140,7 +143,6 @@ export default class MainPresenter {
     this.#currentSortType = sortType;
     this.#renderSort();
 
-
     // - Очищаем список
     this.#clearFilmListAllMovies();
     // - Рендерим список заново
@@ -148,12 +150,10 @@ export default class MainPresenter {
   }
 
   #renderSort = () => {
-
-    this.#sortComponent = new SortView(this.#currentSortType);
-
-    // Метод для рендеринга сортировки
-    render(this.#mainContainer, this.#sortComponent, RenderPosition.BEFOREEND);
-    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
+    if (!this.#sortPresenter) {
+      this.#sortPresenter = new SortPresenter(this.#mainContainer, this.#handleSortTypeChange);
+    }
+    this.#sortPresenter.init(this.#currentSortType);
   }
 
   #renderFilm = (filmListElement, film, typeFilmList) => {
