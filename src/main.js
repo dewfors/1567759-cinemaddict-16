@@ -10,7 +10,7 @@ const films = API.getFilms();
 // const films = [];
 
 const filmsModel = new FilmsModel();
-filmsModel.tasks = films;
+filmsModel.films = films;
 
 // Header
 const siteHeaderElement = document.querySelector('.header');
@@ -34,6 +34,6 @@ const renderFooter = () => {
 renderHeader();
 
 const mainPresenter = new MainPresenter(siteMainElement, filmsModel);
-mainPresenter.init(films);
+mainPresenter.init();
 
 renderFooter();
