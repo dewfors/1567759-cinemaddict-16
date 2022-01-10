@@ -1,6 +1,5 @@
 import MenuView from '../view/menu-view.js';
 import {render, RenderPosition, remove} from '../utils/render.js';
-import SortView from '../view/sort-view.js';
 import FilmsListNoFilmsView from '../view/films-list-no-films-view.js';
 import FilmsBoardView from '../view/films-board-view.js';
 import FilmsListAllMoviesView from '../view/films-list-all-movies-view.js';
@@ -9,16 +8,14 @@ import FilmsListTopRatedView from '../view/films-list-top-rated-view.js';
 import FilmsListMostCommentedView from '../view/films-list-most-commented-view.js';
 import ShowMoreButtonView from '../view/show-more-button-view.js';
 import FilmPresenter from './film-presenter';
-import {TypeFilmList, SortType} from '../utils/const.js';
-import {updateItem} from '../utils/common.js';
+import {TypeFilmList, SortType, UpdateType, UserAction} from '../utils/const.js';
 import {sortFilmsByDate, sortFilmsByRating} from '../utils/film.js';
-import SortPresenter from "./sort-presenter";
-import {UpdateType, UserAction} from "../utils/const";
+import SortPresenter from './sort-presenter.js';
 
 
 const FILM_COUNT_PER_STEP = 5;
-const FILM_COUNT_TOP_RATED = 2;
-const FILM_COUNT_MOST_COMMENTED = 2;
+// const FILM_COUNT_TOP_RATED = 2;
+// const FILM_COUNT_MOST_COMMENTED = 2;
 
 export default class MainPresenter {
   #mainContainer = null;
@@ -122,7 +119,7 @@ export default class MainPresenter {
 
   #handleViewAction = (actionType, updateType, update) => {
 
-    console.log(actionType, updateType, update);
+    // console.log(actionType, updateType, update);
     // Здесь будем вызывать обновление модели.
     // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
     // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
@@ -142,7 +139,7 @@ export default class MainPresenter {
   }
 
   #handleModelEvent = (updateType, data) => {
-    console.log(updateType, data);
+    // console.log(updateType, data);
     // В зависимости от типа изменений решаем, что делать:
     // - PATCH обновить часть списка (например, когда поменялись комментарии)
     // - MINOR обновить список (например, при добавлении в избранное)
@@ -326,7 +323,5 @@ export default class MainPresenter {
     this.#filmPresenterComment.forEach((presenter) => presenter.destroy());
     this.#filmPresenterComment.clear();
   }
-
-
 
 }

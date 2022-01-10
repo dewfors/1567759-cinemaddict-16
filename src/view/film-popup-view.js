@@ -223,8 +223,6 @@ export default class FilmPopupView extends SmartView{
     this.#setInnerHandlers();
   }
 
-
-
   #setInnerHandlers = () => {
     this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#handlerCommentEmojiChange);
     this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#handlerCommentTextInput);
@@ -244,15 +242,15 @@ export default class FilmPopupView extends SmartView{
   #handlerCommentSend = (evt) => {
     if ((evt.ctrlKey || evt.metaKey) && evt.key === 'Enter') {
 
-      if (!this._data.currentCommentEmoji || !this._data.currentCommentText) {
-        return;
-      }
+      // if (!this._data.currentCommentEmoji || !this._data.currentCommentText) {
+      //   return;
+      // }
 
-      const newComment = {
-        id: '',
-        comment: this._data.currentCommentText,
-        emotion: this._data.currentCommentEmoji,
-      };
+      // const newComment = {
+      //   id: '',
+      //   comment: this._data.currentCommentText,
+      //   emotion: this._data.currentCommentEmoji,
+      // };
 
       // console.log(newComment);
 

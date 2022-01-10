@@ -1,8 +1,7 @@
 import FilmCardView from '../view/film-card-view.js';
 import FilmPopupView from '../view/film-popup-view.js';
-import {BODY_HIDE_OVERFLOW_CLASS_NAME, TypeControls} from '../utils/const.js';
+import {BODY_HIDE_OVERFLOW_CLASS_NAME, TypeControls, UpdateType, UserAction} from '../utils/const.js';
 import {render, RenderPosition, replace, remove} from '../utils/render.js';
-import {UpdateType, UserAction} from "../utils/const";
 
 const Mode = {
   DEFAULT: 'DEFAULT',
