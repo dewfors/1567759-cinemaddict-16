@@ -67,9 +67,41 @@ export default class MainPresenter {
   }
 
   init = () => {
-    // this.#films = [...films];
-    // this.#sourcedFilms = [...films];
     this.#renderBoard();
+  }
+
+  #clearBoard = ({resetRenderedFilmCount = false, resetSortType = false} = {}) => {
+    const filmCount = this.films.length;
+
+    this.#filmPresenterAll.forEach((presenter) => presenter.destroy());
+    this.#filmPresenterRate.forEach((presenter) => presenter.destroy());
+    this.#filmPresenterComment.forEach((presenter) => presenter.destroy());
+    this.#filmPresenterAll.clear();
+    this.#filmPresenterRate.clear();
+    this.#filmPresenterComment.clear();
+
+    this.#sortPresenter.destroy();
+
+    remove(this.#showMoreButtonComponent);
+    remove(this.#filmsComponent);
+
+    if (this.#noFilmsComponent) {
+      remove(this.#noFilmsComponent);
+    }
+
+    if (resetRenderedFilmCount) {
+      this.#renderedFilmCount = FILM_COUNT_PER_STEP;
+    } else {
+      // На случай, если перерисовка доски вызвана
+      // уменьшением количества фильмов
+      // нужно скорректировать число показанных фильмов
+      this.#renderedFilmCount = Math.min(filmCount, this.#renderedFilmCount);
+    }
+
+    if (resetSortType) {
+      this.#currentSortType = SortType.DEFAULT;
+    }
+
   }
 
   #renderBoard = () => {
@@ -89,6 +121,7 @@ export default class MainPresenter {
   }
 
   #handleViewAction = (actionType, updateType, update) => {
+
     console.log(actionType, updateType, update);
     // Здесь будем вызывать обновление модели.
     // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
@@ -118,10 +151,24 @@ export default class MainPresenter {
     switch (updateType) {
       case UpdateType.PATCH:
         this.#handleFilmChange(data);
+        this.#clearFilmListCommentMovies();
+        this.#renderFilmsListCommentMovies();
         break;
       case UpdateType.MINOR:
+        // если фильтр  ALL, тогда
+        // this.#handleFilmChange(data);
+        // иначе
+        this.#clearFilmListAllMovies();
+        this.#clearFilmListRateMovies();
+        this.#clearFilmListCommentMovies();
+        this.#renderFilmsListAllMovies();
+        this.#renderFilmsListRateMovies();
+        this.#renderFilmsListCommentMovies();
+
         break;
       case UpdateType.MAJOR:
+        this.#clearBoard = ({resetRenderedFilmCount: true, resetSortType: true});
+        this.#renderBoard();
         break;
     }
 
