@@ -46,9 +46,13 @@ export default class FilmPresenter {
 
     if (this.#mode === Mode.DEFAULT) {
       replace(this.#filmComponent, prevFilmComponent);
+      // if (prevFilmComponent) {
+      //   replace(this.#filmComponent, prevFilmComponent);
+      // }
     }
 
     if (this.#mode === Mode.POPUP) {
+      replace(this.#filmComponent, prevFilmComponent);
       replace(this.#filmPopupComponent, prevFilmPopupComponent);
     }
 
@@ -59,7 +63,7 @@ export default class FilmPresenter {
 
   destroy = () => {
     remove(this.#filmComponent);
-    remove(this.#filmPopupComponent);
+    // remove(this.#filmPopupComponent);
   }
 
   resetView = () => {
@@ -117,7 +121,7 @@ export default class FilmPresenter {
     }
     this.#changeData(
       UserAction.UPDATE_FILM,
-      UpdateType.MAJOR,
+      UpdateType.MINOR,
       {...this.#film, userDetails: userDetails},
     );
   }

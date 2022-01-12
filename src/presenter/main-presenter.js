@@ -12,11 +12,13 @@ import {TypeFilmList, SortType, UpdateType, UserAction} from '../utils/const.js'
 import {sortFilmsByDate, sortFilmsByRating} from '../utils/film.js';
 import SortPresenter from './sort-presenter.js';
 import {filter} from "../utils/filter";
+import {FilterType} from "../utils/const";
+import {sortFilmsByCommetns} from "../utils/film";
 
 
 const FILM_COUNT_PER_STEP = 5;
-// const FILM_COUNT_TOP_RATED = 2;
-// const FILM_COUNT_MOST_COMMENTED = 2;
+const FILM_COUNT_TOP_RATED = 2;
+const FILM_COUNT_MOST_COMMENTED = 2;
 
 export default class MainPresenter {
   #mainContainer = null;
@@ -84,7 +86,7 @@ export default class MainPresenter {
     this.#filmPresenterRate.clear();
     this.#filmPresenterComment.clear();
 
-    this.#sortPresenter.destroy();
+    // this.#sortPresenter.destroy();
 
     remove(this.#showMoreButtonComponent);
     remove(this.#filmsComponent);
@@ -152,6 +154,8 @@ export default class MainPresenter {
     // - MINOR обновить список (например, при добавлении в избранное)
     // - MAJOR обновить всю доску (при переключении фильтра)
 
+    const filterType = this.#filterModel.filter;
+
     switch (updateType) {
       case UpdateType.PATCH:
         this.#handleFilmChange(data);
@@ -159,16 +163,16 @@ export default class MainPresenter {
         this.#renderFilmsListCommentMovies();
         break;
       case UpdateType.MINOR:
-        // если фильтр  ALL, тогда
-        // this.#handleFilmChange(data);
-        // иначе
-        this.#clearFilmListAllMovies();
-        this.#clearFilmListRateMovies();
-        this.#clearFilmListCommentMovies();
-        this.#renderFilmsListAllMovies();
-        this.#renderFilmsListRateMovies();
-        this.#renderFilmsListCommentMovies();
-
+        if (filterType === FilterType.ALL) {
+          this.#handleFilmChange(data);
+        } else {
+          this.#clearFilmListAllMovies();
+          this.#clearFilmListRateMovies();
+          this.#clearFilmListCommentMovies();
+          this.#renderFilmsListAllMovies();
+          this.#renderFilmsListRateMovies();
+          this.#renderFilmsListCommentMovies();
+        }
         break;
       case UpdateType.MAJOR:
         this.#clearBoard({resetRenderedFilmCount: true, resetSortType: true});
@@ -303,15 +307,13 @@ export default class MainPresenter {
   }
 
   #renderFilmsListRateMovies = () => {
-    // for (let i = 0; i < FILM_COUNT_TOP_RATED; i++) {
-    //   this.#renderFilm(this.#filmsListRateComponent.element, this.#films[i], TypeFilmList.TOP_RATED);
-    // }
+    const films = this.#filmsModel.films.sort(sortFilmsByRating).slice(0, FILM_COUNT_TOP_RATED);
+    films.forEach((film) => this.#renderFilm(this.#filmsListRateComponent.element, film, TypeFilmList.TOP_RATED));
   }
 
   #renderFilmsListCommentMovies = () => {
-    // for (let i = 0; i < FILM_COUNT_MOST_COMMENTED; i++) {
-    //   this.#renderFilm(this.#filmsListCommentComponent.element, this.#films[i], TypeFilmList.MOST_COMMENTED);
-    // }
+    const films = this.#filmsModel.films.sort(sortFilmsByCommetns).slice(0, FILM_COUNT_MOST_COMMENTED);
+    films.forEach((film) => this.#renderFilm(this.#filmsListCommentComponent.element, film, TypeFilmList.MOST_COMMENTED));
   }
 
   #clearFilmListAllMovies = () => {
