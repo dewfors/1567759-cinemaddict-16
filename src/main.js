@@ -4,6 +4,7 @@ import FilmsStatisticsView from './view/films-statistics-view.js';
 import APIMOCK from './mock/mockService.js';
 import MainPresenter from './presenter/main-presenter.js';
 import FilmsModel from './model/films-model.js';
+import FilterModel from './model/filter-model.js';
 
 const API = new APIMOCK();
 const films = API.getFilms();
@@ -11,6 +12,8 @@ const films = API.getFilms();
 
 const filmsModel = new FilmsModel();
 filmsModel.films = films;
+
+const filterModel = new FilterModel();
 
 // Header
 const siteHeaderElement = document.querySelector('.header');
