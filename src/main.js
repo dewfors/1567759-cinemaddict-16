@@ -5,6 +5,7 @@ import APIMOCK from './mock/mockService.js';
 import MainPresenter from './presenter/main-presenter.js';
 import FilmsModel from './model/films-model.js';
 import FilterModel from './model/filter-model.js';
+import FilterPresenter from './presenter/filter-presenter.js';
 
 const API = new APIMOCK();
 const films = API.getFilms();
@@ -36,7 +37,14 @@ const renderFooter = () => {
 
 renderHeader();
 
+const renderNavigation = () => {
+  const filterPresenter = new FilterPresenter(siteMainElement, filterModel, filmsModel);
+  filterPresenter.init();
+}
+
+
 const mainPresenter = new MainPresenter(siteMainElement, filmsModel);
 mainPresenter.init();
+renderNavigation();
 
 renderFooter();

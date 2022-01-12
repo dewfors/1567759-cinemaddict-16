@@ -102,7 +102,7 @@ export default class MainPresenter {
   }
 
   #renderBoard = () => {
-    this.#renderMenu();
+    // this.#renderMenu();
 
     if (this.films.length === 0) {
       this.#renderNoFilms();
@@ -211,13 +211,13 @@ export default class MainPresenter {
     this.#renderFilmsListCommentMovies();
   }
 
-  #renderMenu = () => {
-
-
-    // Метод для рендеринга меню
-    const menuComponent = new MenuView(this.films);
-    render(this.#mainContainer, menuComponent, RenderPosition.BEFOREEND);
-  }
+  // #renderMenu = () => {
+  //
+  //
+  //   // Метод для рендеринга меню
+  //   const menuComponent = new MenuView(this.films);
+  //   render(this.#mainContainer, menuComponent, RenderPosition.BEFOREEND);
+  // }
 
   #handleSortTypeChange = (sortType) => {
 
