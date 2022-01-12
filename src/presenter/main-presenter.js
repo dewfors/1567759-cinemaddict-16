@@ -36,7 +36,7 @@ export default class MainPresenter {
 
   #showMoreButtonComponent = new ShowMoreButtonView();
 
-  #noFilmsComponent = new FilmsListNoFilmsView();
+  #noFilmsComponent = null;
 
   // #films = [];
   #sortPresenter = null;
@@ -46,7 +46,7 @@ export default class MainPresenter {
   #filmPresenterComment = new Map();
 
   #currentSortType = SortType.DEFAULT;
-  // #sourcedFilms = [];
+  #filterType = FilterType.ALL;
 
   constructor(mainContainer, filmsModel, filterModel) {
     this.#mainContainer = mainContainer;
@@ -58,9 +58,9 @@ export default class MainPresenter {
   }
 
   get films() {
-    const filterType = this.#filterModel.filter;
+    this.#filterType = this.#filterModel.filter;
     const films = this.#filmsModel.films;
-    const filteredFilms = filter[filterType](films);
+    const filteredFilms = filter[this.#filterType](films);
 
     switch (this.#currentSortType) {
       case SortType.DATE:
@@ -166,12 +166,14 @@ export default class MainPresenter {
         if (filterType === FilterType.ALL) {
           this.#handleFilmChange(data);
         } else {
-          this.#clearFilmListAllMovies();
-          this.#clearFilmListRateMovies();
-          this.#clearFilmListCommentMovies();
-          this.#renderFilmsListAllMovies();
-          this.#renderFilmsListRateMovies();
-          this.#renderFilmsListCommentMovies();
+          // this.#clearFilmListAllMovies();
+          // this.#clearFilmListRateMovies();
+          // this.#clearFilmListCommentMovies();
+          // this.#renderFilmsListAllMovies();
+          // this.#renderFilmsListRateMovies();
+          // this.#renderFilmsListCommentMovies();
+          this.#clearBoard();
+          this.#renderBoard();
         }
         break;
       case UpdateType.MAJOR:
@@ -199,6 +201,7 @@ export default class MainPresenter {
   }
 
   #renderNoFilms = () => {
+    this.#noFilmsComponent = new FilmsListNoFilmsView(this.#filterType);
     render(this.#mainContainer, this.#filmsComponent, RenderPosition.BEFOREEND);
     render(this.#filmsComponent, this.#noFilmsComponent, RenderPosition.BEFOREEND);
   }
