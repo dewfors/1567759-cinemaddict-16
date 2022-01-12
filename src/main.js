@@ -43,7 +43,7 @@ const renderNavigation = () => {
 }
 
 
-const mainPresenter = new MainPresenter(siteMainElement, filmsModel);
+const mainPresenter = new MainPresenter(siteMainElement, filmsModel, filterModel);
 mainPresenter.init();
 renderNavigation();
 

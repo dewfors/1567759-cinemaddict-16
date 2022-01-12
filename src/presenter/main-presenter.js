@@ -11,6 +11,7 @@ import FilmPresenter from './film-presenter';
 import {TypeFilmList, SortType, UpdateType, UserAction} from '../utils/const.js';
 import {sortFilmsByDate, sortFilmsByRating} from '../utils/film.js';
 import SortPresenter from './sort-presenter.js';
+import {filter} from "../utils/filter";
 
 
 const FILM_COUNT_PER_STEP = 5;
@@ -20,6 +21,7 @@ const FILM_COUNT_PER_STEP = 5;
 export default class MainPresenter {
   #mainContainer = null;
   #filmsModel = null;
+  #filterModel = null;
 
   // #sortComponent = new SortView();
   #filmsComponent = new FilmsBoardView();
@@ -44,23 +46,28 @@ export default class MainPresenter {
   #currentSortType = SortType.DEFAULT;
   // #sourcedFilms = [];
 
-  constructor(mainContainer, filmsModel) {
+  constructor(mainContainer, filmsModel, filterModel) {
     this.#mainContainer = mainContainer;
     this.#filmsModel = filmsModel;
+    this.#filterModel = filterModel;
 
     this.#filmsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get films() {
+    const filterType = this.#filterModel.filter;
+    const films = this.#filmsModel.films;
+    const filteredFilms = filter[filterType](films);
 
     switch (this.#currentSortType) {
       case SortType.DATE:
-        return [...this.#filmsModel.films].sort(sortFilmsByDate);
+        return filteredFilms.sort(sortFilmsByDate);
       case SortType.RATING:
-        return [...this.#filmsModel.films].sort(sortFilmsByRating);
+        return filteredFilms.sort(sortFilmsByRating);
     }
 
-    return this.#filmsModel.films;
+    return filteredFilms;
   }
 
   init = () => {
@@ -164,7 +171,7 @@ export default class MainPresenter {
 
         break;
       case UpdateType.MAJOR:
-        this.#clearBoard = ({resetRenderedFilmCount: true, resetSortType: true});
+        this.#clearBoard({resetRenderedFilmCount: true, resetSortType: true});
         this.#renderBoard();
         break;
     }
