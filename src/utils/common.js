@@ -5,4 +5,3 @@ dayjs.extend(duration);
 
 export const formatDate = (value, format = 'YYYY') => dayjs(value).format(format);
 export const getTimeDuration = (count, format = 'm') => dayjs.duration(count, format);
-
