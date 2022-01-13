@@ -1,19 +1,20 @@
 import SmartView from './smart-view.js';
 import {formatDate, getTimeDuration} from '../utils/common.js';
-import {TypeControls} from '../utils/const.js';
+import {TypeControls, UserAction} from '../utils/const.js';
+import {nanoid} from 'nanoid';
 
-
+const deleteCommentButtonClassName = 'film-details__comment-delete';
+const commentContainerClassName = 'film-details__comment';
 const getClassNameActive = (flag) => flag ? 'film-details__control-button--active' : '';
-const emojiList = ['smile','sleeping','puke','angry'];
+const emojiList = ['smile', 'sleeping', 'puke', 'angry'];
 
 export const createFilmPopupTemplate = (film) => {
-
-  // console.log(film);
 
   const {
     title, alternativeTitle, totalRating, release, runtime,
     genre, description, poster, ageRating, director, writers,
-    actors, currentCommentEmoji} = film;
+    actors, currentCommentEmoji
+  } = film;
 
   const currentEmoji = currentCommentEmoji ? currentCommentEmoji : '';
 
@@ -107,7 +108,7 @@ export const createFilmPopupTemplate = (film) => {
         </h3>
 
         <ul class="film-details__comments-list">
-          ${filmComments.map(({author, comment, date, emotion}) =>`<li class="film-details__comment">
+          ${filmComments.map(({id, author, comment, date, emotion}) => `<li class="film-details__comment" data-id="${id}">
             <span class="film-details__comment-emoji">
               <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
             </span>
@@ -169,8 +170,8 @@ export const createFilmPopupTemplate = (film) => {
 };
 
 
-export default class FilmPopupView extends SmartView{
-  #film = null;
+export default class FilmPopupView extends SmartView {
+  // #film = null;
 
   constructor(film) {
     super();
@@ -196,6 +197,14 @@ export default class FilmPopupView extends SmartView{
   setControlsClickHandler = (callback) => {
     this._callback.controlsClick = callback;
     this.element.querySelector('.film-details__controls').addEventListener('click', this.#controlsClickHandler);
+  }
+
+  setAddCommentHandler = (callback) => {
+    this._callback.addComment = callback;
+  }
+
+  setDelCommentHandler = (callback) => {
+    this._callback.delComment = callback;
   }
 
   #controlsClickHandler = (evt) => {
@@ -227,6 +236,7 @@ export default class FilmPopupView extends SmartView{
     this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#handlerCommentEmojiChange);
     this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#handlerCommentTextInput);
     this.element.addEventListener('keydown', this.#handlerCommentSend);
+    this.element.querySelector('.film-details__comments-list').addEventListener('click', this.#handlerCommentDelete);
   }
 
   #handlerCommentEmojiChange = (evt) => {
@@ -242,26 +252,57 @@ export default class FilmPopupView extends SmartView{
   #handlerCommentSend = (evt) => {
     if ((evt.ctrlKey || evt.metaKey) && evt.key === 'Enter') {
 
-      // if (!this._data.currentCommentEmoji || !this._data.currentCommentText) {
-      //   return;
-      // }
+      if (!this._data.currentCommentEmoji || !this._data.currentCommentText) {
+        return;
+      }
 
-      // const newComment = {
-      //   id: '',
-      //   comment: this._data.currentCommentText,
-      //   emotion: this._data.currentCommentEmoji,
-      // };
-
-      // console.log(newComment);
+      const newComment = {
+        id: nanoid(),
+        comment: this._data.currentCommentText,
+        emotion: this._data.currentCommentEmoji,
+        //
+        date: 1641686983166,
+        author: 'Jessica'
+      };
 
       // надо записать новый комментарий
-
+      this._data = FilmPopupView.parseFilmToData(this._data, UserAction.ADD_COMMENT, newComment);
+      this._callback.addComment(this._data);
     }
   }
 
+  #handlerCommentDelete = (evt) => {
+    evt.preventDefault();
 
-  static parseFilmToData = (film) => ({...film,
-  });
+    const isDeleteCommentButton = evt.target.classList.contains(deleteCommentButtonClassName);
+    if (!isDeleteCommentButton) {
+      return;
+    }
+
+    const commentIdToDelete = evt.target.closest(`.${commentContainerClassName}`).dataset.id;
+
+    this._data = FilmPopupView.parseFilmToData(this._data, UserAction.DELETE_COMMENT, commentIdToDelete);
+    this._callback.delComment(this._data);
+
+  }
+
+
+  static parseFilmToData = (film, action, comment) => {
+    const filmData = {...film};
+
+    if (action === UserAction.ADD_COMMENT) {
+      filmData.comments.push(comment);
+      delete filmData.currentCommentEmoji;
+      delete filmData.currentCommentText;
+    }
+
+    if (action === UserAction.DELETE_COMMENT) {
+      filmData.comments = [...filmData.comments].filter((commentItem) => commentItem.id !== comment);
+    }
+
+
+    return filmData;
+  }
 
   static parseDataToFilm = (data) => {
     const film = {...data};

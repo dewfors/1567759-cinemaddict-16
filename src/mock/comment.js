@@ -1,4 +1,5 @@
 import {getRandomInteger, getRandomiseArray} from '../utils/utils.js';
+import {nanoid} from 'nanoid';
 
 const mockData = {
   authors: [
@@ -41,6 +42,7 @@ const generateDate = () => {
 const generateEmotion = () => mockData.emotions[getRandomInteger(0, mockData.emotions.length - 1)];
 
 export const generateComment = () => ({
+  id: nanoid(),
   author: generateAuthor(),
   comment: generateCommentText(),
   date: generateDate(),

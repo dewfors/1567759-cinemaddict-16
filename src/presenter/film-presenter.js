@@ -39,6 +39,9 @@ export default class FilmPresenter {
     this.#filmComponent.setControlsClickHandler(this.#handleControlsClick);
     this.#filmPopupComponent.setControlsClickHandler(this.#handleControlsClick);
 
+    this.#filmPopupComponent.setAddCommentHandler(this.#handleAddComment);
+    this.#filmPopupComponent.setDelCommentHandler(this.#handleDelComment);
+
     if (prevFilmComponent === null || prevFilmPopupComponent === null) {
       render(this.#filmListContainer, this.#filmComponent, RenderPosition.BEFOREEND);
       return;
@@ -123,6 +126,22 @@ export default class FilmPresenter {
       UserAction.UPDATE_FILM,
       UpdateType.MINOR,
       {...this.#film, userDetails: userDetails},
+    );
+  }
+
+  #handleAddComment = (data) => {
+    this.#changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.PATCH,
+      {...this.#film, comments: data.comments},
+    );
+  }
+
+  #handleDelComment = (data) => {
+    this.#changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.PATCH,
+      {...this.#film, comments: data.comments},
     );
   }
 
