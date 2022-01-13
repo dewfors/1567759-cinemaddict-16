@@ -1,3 +1,4 @@
+import he from 'he';
 import SmartView from './smart-view.js';
 import {formatDate, getTimeDuration} from '../utils/common.js';
 import {TypeControls, UserAction} from '../utils/const.js';
@@ -113,7 +114,7 @@ export const createFilmPopupTemplate = (film) => {
               <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
             </span>
             <div>
-              <p class="film-details__comment-text">${comment}</p>
+              <p class="film-details__comment-text">${he.encode(comment)}</p>
               <p class="film-details__comment-info">
                 <span class="film-details__comment-author">${author}</span>
                 <span class="film-details__comment-day">${formatDate(date, 'YYYY/MM/DD HH:mm')}</span>
