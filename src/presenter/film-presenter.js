@@ -49,9 +49,6 @@ export default class FilmPresenter {
 
     if (this.#mode === Mode.DEFAULT) {
       replace(this.#filmComponent, prevFilmComponent);
-      // if (prevFilmComponent) {
-      //   replace(this.#filmComponent, prevFilmComponent);
-      // }
     }
 
     if (this.#mode === Mode.POPUP) {

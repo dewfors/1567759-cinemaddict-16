@@ -40,8 +40,7 @@ renderHeader();
 const renderNavigation = () => {
   const filterPresenter = new FilterPresenter(siteMainElement, filterModel, filmsModel);
   filterPresenter.init();
-}
-
+};
 
 const mainPresenter = new MainPresenter(siteMainElement, filmsModel, filterModel);
 mainPresenter.init();
