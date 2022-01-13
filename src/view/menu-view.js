@@ -27,15 +27,31 @@ const createMenuItemTemplate = (currentFilter, currentFilterType) => {
   );
 };
 
+const createMenuAddItemTemplate = (currentFilterType) => {
+
+  const isFilterTypeStats = currentFilterType === FilterType.STATS;
+
+  return (
+    `<a
+        href="#${FilterType.STATS}"
+        class="main-navigation__additional ${isFilterTypeStats ? LINK_ACTIVE_CLASS_NAME : ''}"
+        data-filter="stats">
+        Stats
+    </a>`
+  );
+};
+
 export const createMenuTemplate = (filterItems, currentFilterType) => {
 
   const filterItemsTemplate = filterItems
     .map((currentFilter) => createMenuItemTemplate(currentFilter, currentFilterType))
     .join('');
 
+  const filterAddTemplate = createMenuAddItemTemplate(currentFilterType);
+
   return `<nav class="main-navigation">
     ${filterItemsTemplate}
-    <a href="#stats" class="main-navigation__additional" data-filter="stats">Stats</a>
+    ${filterAddTemplate}
   </nav>`;
 
 };

@@ -51,8 +51,13 @@ export default class MainPresenter {
     this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
-  get films() {
+  getFilms() {
     this.#filterType = this.#filterModel.filter;
+
+    if (this.#filterType === FilterType.STATS) {
+      return [];
+    }
+
     const films = this.#filmsModel.films;
     const filteredFilms = filter[this.#filterType](films);
 
@@ -69,8 +74,17 @@ export default class MainPresenter {
     this.#renderBoard();
   }
 
+  #destroy = () => {
+    this.#clearBoard();
+
+    if (this.#sortPresenter) {
+      this.#sortPresenter.destroy();
+      this.#sortPresenter = null;
+    }
+  }
+
   #clearBoard = ({resetRenderedFilmCount = false, resetSortType = false} = {}) => {
-    const filmCount = this.films.length;
+    const filmCount = this.getFilms().length;
 
     this.#filmPresenterAll.forEach((presenter) => presenter.destroy());
     this.#filmPresenterRate.forEach((presenter) => presenter.destroy());
@@ -102,7 +116,7 @@ export default class MainPresenter {
   }
 
   #renderBoard = () => {
-    if (this.films.length === 0) {
+    if (this.getFilms().length === 0) {
       this.#renderNoFilms();
       return;
     }
@@ -160,8 +174,12 @@ export default class MainPresenter {
         }
         break;
       case UpdateType.MAJOR:
-        this.#clearBoard({resetRenderedFilmCount: true, resetSortType: true});
-        this.#renderBoard();
+        if (filterType !== FilterType.STATS) {
+          this.#clearBoard({resetRenderedFilmCount: true, resetSortType: true});
+          this.#renderBoard();
+        } else {
+          this.#destroy();
+        }
         break;
     }
 
@@ -252,8 +270,8 @@ export default class MainPresenter {
 
   #renderFilmsListAllMovies = () => {
 
-    const filmCount = this.films.length;
-    const films = this.films.slice(0, Math.min(filmCount, FILM_COUNT_PER_STEP));
+    const filmCount = this.getFilms().length;
+    const films = this.getFilms().slice(0, Math.min(filmCount, FILM_COUNT_PER_STEP));
 
     this.#renderFilmsAllMovies(films);
 
@@ -265,9 +283,9 @@ export default class MainPresenter {
 
   #handleShowMoreButtonClick = () => {
 
-    const filmCount = this.films.length;
+    const filmCount = this.getFilms().length;
     const newRenderedFilmCount = Math.min(filmCount, this.#renderedFilmCount + FILM_COUNT_PER_STEP);
-    const films = this.films.slice(this.#renderedFilmCount, newRenderedFilmCount);
+    const films = this.getFilms().slice(this.#renderedFilmCount, newRenderedFilmCount);
 
     this.#renderFilmsAllMovies(films);
     this.#renderedFilmCount = newRenderedFilmCount;
