@@ -6,6 +6,7 @@ import FilmsListContainerView from '../view/films-list-container-view.js';
 import FilmsListTopRatedView from '../view/films-list-top-rated-view.js';
 import FilmsListMostCommentedView from '../view/films-list-most-commented-view.js';
 import ShowMoreButtonView from '../view/show-more-button-view.js';
+import StatisticsView from '../view/statistics-view.js';
 import FilmPresenter from './film-presenter';
 import {TypeFilmList, SortType, UpdateType, UserAction, FilterType} from '../utils/const.js';
 import {sortFilmsByDate, sortFilmsByRating, sortFilmsByCommetns} from '../utils/film.js';
@@ -32,6 +33,7 @@ export default class MainPresenter {
   #showMoreButtonComponent = new ShowMoreButtonView();
 
   #noFilmsComponent = null;
+  #statisticsComponent = null;
 
   #sortPresenter = null;
   #renderedFilmCount = FILM_COUNT_PER_STEP;
@@ -51,8 +53,13 @@ export default class MainPresenter {
     this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
-  get films() {
+  getFilms() {
     this.#filterType = this.#filterModel.filter;
+
+    if (this.#filterType === FilterType.STATS) {
+      return [];
+    }
+
     const films = this.#filmsModel.films;
     const filteredFilms = filter[this.#filterType](films);
 
@@ -67,10 +74,20 @@ export default class MainPresenter {
 
   init = () => {
     this.#renderBoard();
+    // this.#renderStatistics();
+  }
+
+  #destroy = () => {
+    this.#clearBoard();
+
+    if (this.#sortPresenter) {
+      this.#sortPresenter.destroy();
+      this.#sortPresenter = null;
+    }
   }
 
   #clearBoard = ({resetRenderedFilmCount = false, resetSortType = false} = {}) => {
-    const filmCount = this.films.length;
+    const filmCount = this.getFilms().length;
 
     this.#filmPresenterAll.forEach((presenter) => presenter.destroy());
     this.#filmPresenterRate.forEach((presenter) => presenter.destroy());
@@ -84,6 +101,10 @@ export default class MainPresenter {
 
     if (this.#noFilmsComponent) {
       remove(this.#noFilmsComponent);
+    }
+
+    if (this.#statisticsComponent) {
+      remove(this.#statisticsComponent);
     }
 
     if (resetRenderedFilmCount) {
@@ -102,7 +123,7 @@ export default class MainPresenter {
   }
 
   #renderBoard = () => {
-    if (this.films.length === 0) {
+    if (this.getFilms().length === 0) {
       this.#renderNoFilms();
       return;
     }
@@ -160,8 +181,13 @@ export default class MainPresenter {
         }
         break;
       case UpdateType.MAJOR:
-        this.#clearBoard({resetRenderedFilmCount: true, resetSortType: true});
-        this.#renderBoard();
+        if (filterType !== FilterType.STATS) {
+          this.#clearBoard({resetRenderedFilmCount: true, resetSortType: true});
+          this.#renderBoard();
+        } else {
+          this.#destroy();
+          this.#renderStatistics();
+        }
         break;
     }
 
@@ -208,6 +234,11 @@ export default class MainPresenter {
     this.#renderFilmsListCommentMovies();
   }
 
+  #renderStatistics = () => {
+    this.#statisticsComponent = new StatisticsView(this.#filmsModel.films);
+    render(this.#mainContainer, this.#statisticsComponent, RenderPosition.BEFOREEND);
+  }
+
   #handleSortTypeChange = (sortType) => {
 
     if (this.#currentSortType === sortType) {
@@ -252,8 +283,8 @@ export default class MainPresenter {
 
   #renderFilmsListAllMovies = () => {
 
-    const filmCount = this.films.length;
-    const films = this.films.slice(0, Math.min(filmCount, FILM_COUNT_PER_STEP));
+    const filmCount = this.getFilms().length;
+    const films = this.getFilms().slice(0, Math.min(filmCount, FILM_COUNT_PER_STEP));
 
     this.#renderFilmsAllMovies(films);
 
@@ -265,9 +296,9 @@ export default class MainPresenter {
 
   #handleShowMoreButtonClick = () => {
 
-    const filmCount = this.films.length;
+    const filmCount = this.getFilms().length;
     const newRenderedFilmCount = Math.min(filmCount, this.#renderedFilmCount + FILM_COUNT_PER_STEP);
-    const films = this.films.slice(this.#renderedFilmCount, newRenderedFilmCount);
+    const films = this.getFilms().slice(this.#renderedFilmCount, newRenderedFilmCount);
 
     this.#renderFilmsAllMovies(films);
     this.#renderedFilmCount = newRenderedFilmCount;
