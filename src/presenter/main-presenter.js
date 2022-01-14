@@ -6,6 +6,7 @@ import FilmsListContainerView from '../view/films-list-container-view.js';
 import FilmsListTopRatedView from '../view/films-list-top-rated-view.js';
 import FilmsListMostCommentedView from '../view/films-list-most-commented-view.js';
 import ShowMoreButtonView from '../view/show-more-button-view.js';
+import StatisticsView from '../view/statistics-view.js';
 import FilmPresenter from './film-presenter';
 import {TypeFilmList, SortType, UpdateType, UserAction, FilterType} from '../utils/const.js';
 import {sortFilmsByDate, sortFilmsByRating, sortFilmsByCommetns} from '../utils/film.js';
@@ -32,6 +33,7 @@ export default class MainPresenter {
   #showMoreButtonComponent = new ShowMoreButtonView();
 
   #noFilmsComponent = null;
+  #statisticsComponent = null;
 
   #sortPresenter = null;
   #renderedFilmCount = FILM_COUNT_PER_STEP;
@@ -72,6 +74,7 @@ export default class MainPresenter {
 
   init = () => {
     this.#renderBoard();
+    // this.#renderStatistics();
   }
 
   #destroy = () => {
@@ -98,6 +101,10 @@ export default class MainPresenter {
 
     if (this.#noFilmsComponent) {
       remove(this.#noFilmsComponent);
+    }
+
+    if (this.#statisticsComponent) {
+      remove(this.#statisticsComponent);
     }
 
     if (resetRenderedFilmCount) {
@@ -179,6 +186,7 @@ export default class MainPresenter {
           this.#renderBoard();
         } else {
           this.#destroy();
+          this.#renderStatistics();
         }
         break;
     }
@@ -224,6 +232,11 @@ export default class MainPresenter {
     this.#renderFilmsListAllMovies();
     this.#renderFilmsListRateMovies();
     this.#renderFilmsListCommentMovies();
+  }
+
+  #renderStatistics = () => {
+    this.#statisticsComponent = new StatisticsView(this.#filmsModel.films);
+    render(this.#mainContainer, this.#statisticsComponent, RenderPosition.BEFOREEND);
   }
 
   #handleSortTypeChange = (sortType) => {
