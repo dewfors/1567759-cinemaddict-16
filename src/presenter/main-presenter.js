@@ -152,7 +152,7 @@ export default class MainPresenter {
 
     const film = this.#filmsModel.films.find((filmItem) => filmId === filmItem.id);
 
-    console.log(film);
+   //console.log(film);
 
     // 1. если открыт другой попап, то закрываем
     if (this.#popupPresenter && this.#popupPresenter.film.id !== filmId) {
@@ -210,9 +210,9 @@ export default class MainPresenter {
     // this.#filmPresenterComment.forEach((presenter) => presenter.resetView());
   }
 
-  #handleViewAction = (actionType, updateType, update, state) => {
+  #handleViewAction = async (actionType, updateType, update, state) => {
 
-    console.log(state);
+    //console.log(state);
 
     // console.log(actionType, updateType, update);
     // Здесь будем вызывать обновление модели.
@@ -222,16 +222,22 @@ export default class MainPresenter {
 
     switch (actionType) {
       case UserAction.UPDATE_FILM:
-        this.#filmsModel.updateFilm(updateType, update);
+        await this.#filmsModel.updateFilm(updateType, update);
         break;
       case UserAction.ADD_COMMENT:
-        this.#filmsModel.addComment(updateType, update);
+        try {
+          await this.#filmsModel.addComment(updateType, update);
+        } catch (err) {
+          this.#popupPresenter.shakeCommentElement();
+        }
         break;
       case UserAction.DELETE_COMMENT:
-        this.#filmsModel.deleteComment(updateType, update);
-        console.log('update.film', update);
-
-        this.#filmsModel.updateFilm(UpdateType.PATCH, update.film);
+        try {
+          await this.#filmsModel.deleteComment(updateType, update);
+          await this.#filmsModel.updateFilm(UpdateType.PATCH, update.film);
+        } catch (err) {
+          this.#popupPresenter.shakeCommentElement(update.commentId);
+        }
         break;
     }
   }

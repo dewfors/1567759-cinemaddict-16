@@ -84,7 +84,7 @@ export default class FilmsModel extends AbstractObservable {
 
       // this._notify(updateType);
     } catch(err) {
-      console.log(err);
+      //console.log(err);
       throw new Error('Can\'t delete comment');
     }
   }

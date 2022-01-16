@@ -11,16 +11,21 @@ const emojiList = ['smile', 'sleeping', 'puke', 'angry'];
 
 export const createFilmPopupTemplate = (film, commentsAll, state) => {
 
+  console.log(state);
+
   const {isLoadCommentsError} = state;
   const commentsList = commentsAll;
 
   const {
     title, alternativeTitle, totalRating, release, runtime,
     genre, description, poster, ageRating, director, writers,
-    actors, currentCommentEmoji
+    actors, currentCommentEmoji, currentCommentText,
   } = film;
 
   const currentEmoji = currentCommentEmoji ? currentCommentEmoji : '';
+  const currentText = currentCommentText ? currentCommentText : '';
+
+  const {isCommentSaving, isCommentDeleting, idCommentDelete} = state;
 
   const filmComments = commentsList;
 
@@ -111,24 +116,22 @@ export const createFilmPopupTemplate = (film, commentsAll, state) => {
            ${isLoadCommentsError ? 'Comments not loaded. Please, reload page' : `Comments <span class="film-details__comments-count">${commentsList.length}</span>`}
         </h3>
 
-<!-- комментарии -->
-<!--         <ul class="film-details__comments-list"></ul>-->
-         <ul class="film-details__comments-list">
-           ${filmComments.map(({id, author, comment, date, emotion}) => `<li class="film-details__comment" data-id="${id}">
-             <span class="film-details__comment-emoji">
-               <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
-             </span>
-             <div>
-               <p class="film-details__comment-text">${he.encode(comment)}</p>
-               <p class="film-details__comment-info">
-                 <span class="film-details__comment-author">${author}</span>
-                 <span class="film-details__comment-day">${formatDate(date, 'YYYY/MM/DD HH:mm')}</span>
-                 <button class="film-details__comment-delete">Delete</button>
-               </p>
-             </div>
-           </li>`).join('')}
+       <ul class="film-details__comments-list">
+         ${filmComments.map(({id, author, comment, date, emotion}) => `<li class="film-details__comment" data-id="${id}">
+           <span class="film-details__comment-emoji">
+             <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
+           </span>
+           <div>
+             <p class="film-details__comment-text">${he.encode(comment)}</p>
+             <p class="film-details__comment-info">
+               <span class="film-details__comment-author">${author}</span>
+               <span class="film-details__comment-day">${formatDate(date, 'YYYY/MM/DD HH:mm')}</span>
+               <button ${isCommentSaving || isCommentDeleting ? 'disabled' : ''} class="film-details__comment-delete">${isCommentDeleting && idCommentDelete === id ? 'Deleting...' : 'Delete'}</button>
+             </p>
+           </div>
+         </li>`).join('')}
 
-         </ul>
+       </ul>
 
 
         <div class="film-details__new-comment">
@@ -137,7 +140,7 @@ export const createFilmPopupTemplate = (film, commentsAll, state) => {
           </div>
 
           <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+            <textarea ${isCommentSaving ? 'disabled' : ''} class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${!currentText ? '' : he.encode(currentText)}</textarea>
           </label>
 
           <div class="film-details__emoji-list">
@@ -270,7 +273,7 @@ export default class FilmPopupView extends SmartView {
   #handlerCommentDelete = (evt) => {
     evt.preventDefault();
 
-    console.log(evt);
+    //console.log(evt);
 
     const isDeleteCommentButton = evt.target.classList.contains(deleteCommentButtonClassName);
     if (!isDeleteCommentButton) {
@@ -279,11 +282,11 @@ export default class FilmPopupView extends SmartView {
 
     const commentIdToDelete = evt.target.closest(`.${commentContainerClassName}`).dataset.id;
 
-    console.log('commentIdToDelete', commentIdToDelete);
+    //console.log('commentIdToDelete', commentIdToDelete);
 
     this._data = FilmPopupView.parseFilmToData(this._data, UserAction.DELETE_COMMENT, commentIdToDelete);
 
-    console.log(this._data);
+    //console.log(this._data);
 
     this._callback.delComment(this._data, commentIdToDelete);
 
@@ -315,6 +318,11 @@ export default class FilmPopupView extends SmartView {
     // delete film.isRepeating;
 
     return film;
+  }
+
+  shakeElement(commentElementClassName, resetState) {
+    const commentElement = this.element.querySelector(commentElementClassName);
+    this.shake(commentElement, resetState);
   }
 
 }

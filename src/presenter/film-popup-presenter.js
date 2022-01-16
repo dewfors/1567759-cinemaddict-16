@@ -173,5 +173,19 @@ export default class FilmPopupPresenter {
     );
   }
 
+  shakeCommentElement = (idCommentToDelete = null) => {
+    const resetState = () => {
+      this.#filmPopupComponent.updateState({
+        isCommentSaving: false,
+        isCommentDeleting: false,
+        idCommentDelete: null,
+      });
+    };
+    const commentElementClassName = idCommentToDelete
+      ? `.film-details__comment[data-id='${idCommentToDelete}']`
+      : '.film-details__new-comment';
+    this.#filmPopupComponent.shakeElement(commentElementClassName, resetState);
+  }
+
 }
 
