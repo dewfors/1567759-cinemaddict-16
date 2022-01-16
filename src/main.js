@@ -36,8 +36,11 @@ const siteFooterElement = document.querySelector('.footer');
 const siteFooterStatisticsElement = siteFooterElement.querySelector('.footer__statistics');
 
 const renderFooter = () => {
-  // const footerStatisticsComponent = new FilmsStatisticsView(films.length);
-  // render(siteFooterStatisticsElement, footerStatisticsComponent, RenderPosition.BEFOREEND);
+
+  const films = filmsModel.films;
+
+  const footerStatisticsComponent = new FilmsStatisticsView(films.length);
+  render(siteFooterStatisticsElement, footerStatisticsComponent, RenderPosition.BEFOREEND);
 };
 
 const renderNavigation = () => {
@@ -55,8 +58,11 @@ renderHeader();
 
 const mainPresenter = new MainPresenter(siteMainElement, filmsModel, filterModel);
 mainPresenter.init();
-renderNavigation();
+// renderNavigation();
 
-renderFooter();
+// renderFooter();
 
-filmsModel.init();
+filmsModel.init().finally(() => {
+  renderNavigation();
+  renderFooter();
+});
