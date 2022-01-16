@@ -1,4 +1,5 @@
 import {render, RenderPosition, remove} from '../utils/render.js';
+import LoadingView from '../view/loading-view.js';
 import FilmsListNoFilmsView from '../view/films-list-no-films-view.js';
 import FilmsBoardView from '../view/films-board-view.js';
 import FilmsListAllMoviesView from '../view/films-list-all-movies-view.js';
@@ -32,6 +33,8 @@ export default class MainPresenter {
 
   #showMoreButtonComponent = new ShowMoreButtonView();
 
+  #loadingComponent = new LoadingView();
+
   #noFilmsComponent = null;
   #statisticsComponent = null;
 
@@ -43,6 +46,7 @@ export default class MainPresenter {
 
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.ALL;
+  #isLoading = true;
 
   constructor(mainContainer, filmsModel, filterModel) {
     this.#mainContainer = mainContainer;
@@ -55,6 +59,8 @@ export default class MainPresenter {
 
   getFilms() {
     this.#filterType = this.#filterModel.filter;
+
+    console.log(this.#filterType);
 
     if (this.#filterType === FilterType.STATS) {
       return [];
@@ -69,6 +75,8 @@ export default class MainPresenter {
       case SortType.RATING:
         return filteredFilms.sort(sortFilmsByRating);
     }
+    console.log(filteredFilms);
+
     return filteredFilms;
   }
 
@@ -123,6 +131,12 @@ export default class MainPresenter {
   }
 
   #renderBoard = () => {
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     if (this.getFilms().length === 0) {
       this.#renderNoFilms();
       return;
@@ -189,6 +203,11 @@ export default class MainPresenter {
           this.#renderStatistics();
         }
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderBoard();
+        break;
     }
 
   }
@@ -207,6 +226,12 @@ export default class MainPresenter {
     if (this.#filmPresenterComment.has(updatedFilm.id)) {
       this.#filmPresenterComment.get(updatedFilm.id).init(updatedFilm);
     }
+  }
+
+  #renderLoading = () => {
+    render(this.#mainContainer, this.#filmsComponent, RenderPosition.BEFOREEND);
+    render(this.#filmsComponent, this.#loadingComponent, RenderPosition.AFTERBEGIN);
+
   }
 
   #renderNoFilms = () => {

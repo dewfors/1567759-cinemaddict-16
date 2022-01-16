@@ -108,22 +108,10 @@ export const createFilmPopupTemplate = (film) => {
            Comments <span class="film-details__comments-count">${filmComments.length}</span>
         </h3>
 
-        <ul class="film-details__comments-list">
-          ${filmComments.map(({id, author, comment, date, emotion}) => `<li class="film-details__comment" data-id="${id}">
-            <span class="film-details__comment-emoji">
-              <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
-            </span>
-            <div>
-              <p class="film-details__comment-text">${he.encode(comment)}</p>
-              <p class="film-details__comment-info">
-                <span class="film-details__comment-author">${author}</span>
-                <span class="film-details__comment-day">${formatDate(date, 'YYYY/MM/DD HH:mm')}</span>
-                <button class="film-details__comment-delete">Delete</button>
-              </p>
-            </div>
-          </li>`).join('')}
+<!-- комментарии -->
+         <ul class="film-details__comments-list"></ul>
 
-        </ul>
+
 
         <div class="film-details__new-comment">
           <div class="film-details__add-emoji-label">
@@ -140,27 +128,6 @@ export const createFilmPopupTemplate = (film) => {
                 <img src="./images/emoji/${emojiItem}.png" width="30" height="30" alt="emoji">
               </label>`).join('')}
 
-
-
-<!--            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">-->
-<!--            <label class="film-details__emoji-label" for="emoji-smile">-->
-<!--              <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">-->
-<!--            </label>-->
-
-<!--            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">-->
-<!--            <label class="film-details__emoji-label" for="emoji-sleeping">-->
-<!--              <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">-->
-<!--            </label>-->
-
-<!--            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">-->
-<!--            <label class="film-details__emoji-label" for="emoji-puke">-->
-<!--              <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">-->
-<!--            </label>-->
-
-<!--            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">-->
-<!--            <label class="film-details__emoji-label" for="emoji-angry">-->
-<!--              <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">-->
-<!--            </label>-->
           </div>
         </div>
       </section>

@@ -1,6 +1,7 @@
 import AbstractObservable from '../utils/abstract-observable.js';
 import {nanoid} from "nanoid";
 import {getRandomInteger} from "../utils/utils";
+import {UpdateType} from "../utils/const";
 
 export default class FilmsModel extends AbstractObservable {
   #apiService = null;
@@ -10,22 +11,32 @@ export default class FilmsModel extends AbstractObservable {
     super();
     this.#apiService = apiService;
 
-    this.#apiService.films.then((films) => {
-      console.log(films);
-      console.log(films.map(this.#adaptToClient));
-      // Есть проблема: cтруктура объекта похожа, но некоторые ключи называются иначе,
-      // а ещё на сервере используется snake_case, а у нас camelCase.
-      // Можно, конечно, переписать часть нашего клиентского приложения, но зачем?
-      // Есть вариант получше - паттерн "Адаптер"
-    });
+    // this.#apiService.films.then((films) => {
+    //   console.log(films);
+    //   console.log(films.map(this.#adaptToClient));
+    //   // Есть проблема: cтруктура объекта похожа, но некоторые ключи называются иначе,
+    //   // а ещё на сервере используется snake_case, а у нас camelCase.
+    //   // Можно, конечно, переписать часть нашего клиентского приложения, но зачем?
+    //   // Есть вариант получше - паттерн "Адаптер"
+    // });
   }
 
-  set films(films) {
-    this.#films = [...films];
-  }
+  // set films(films) {
+  //   this.#films = [...films];
+  // }
 
   get films() {
     return this.#films;
+  }
+
+  init = async () => {
+    try {
+      const films = await this.#apiService.films;
+      this.#films = films.map(this.#adaptToClient);
+    } catch (err) {
+      this.#films = [];
+    }
+    this._notify(UpdateType.INIT);
   }
 
   updateFilm = (updateType, update) => {
