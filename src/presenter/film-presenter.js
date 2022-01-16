@@ -14,7 +14,7 @@ export default class FilmPresenter {
   #changeMode = null;
 
   #filmComponent = null;
-  #filmPopupComponent = null;
+  // #filmPopupComponent = null;
 
   #film = null;
   #mode = Mode.DEFAULT;
@@ -29,20 +29,20 @@ export default class FilmPresenter {
     this.#film = film;
 
     const prevFilmComponent = this.#filmComponent;
-    const prevFilmPopupComponent = this.#filmPopupComponent;
+    // const prevFilmPopupComponent = this.#filmPopupComponent;
 
     this.#filmComponent = new FilmCardView(film);
-    this.#filmPopupComponent = new FilmPopupView(film);
+    // this.#filmPopupComponent = new FilmPopupView(film);
 
-    this.#filmComponent.setShowPopupClickHandler(this.#handleShowPopupClick);
-    this.#filmPopupComponent.setClosePopupClickHandler(this.#handleClosePopupClick);
+    this.#filmComponent.setShowPopupClickHandler(this.#showFilmPopup);
+    // this.#filmPopupComponent.setClosePopupClickHandler(this.#handleClosePopupClick);
     this.#filmComponent.setControlsClickHandler(this.#handleControlsClick);
-    this.#filmPopupComponent.setControlsClickHandler(this.#handleControlsClick);
+    // this.#filmPopupComponent.setControlsClickHandler(this.#handleControlsClick);
 
-    this.#filmPopupComponent.setAddCommentHandler(this.#handleAddComment);
-    this.#filmPopupComponent.setDelCommentHandler(this.#handleDelComment);
+    // this.#filmPopupComponent.setAddCommentHandler(this.#handleAddComment);
+    // this.#filmPopupComponent.setDelCommentHandler(this.#handleDelComment);
 
-    if (prevFilmComponent === null || prevFilmPopupComponent === null) {
+    if (prevFilmComponent === null) {
       render(this.#filmListContainer, this.#filmComponent, RenderPosition.BEFOREEND);
       return;
     }
@@ -53,57 +53,60 @@ export default class FilmPresenter {
 
     if (this.#mode === Mode.POPUP) {
       replace(this.#filmComponent, prevFilmComponent);
-      replace(this.#filmPopupComponent, prevFilmPopupComponent);
+      // replace(this.#filmPopupComponent, prevFilmPopupComponent);
     }
 
     remove(prevFilmComponent);
-    remove(prevFilmPopupComponent);
+    // remove(prevFilmPopupComponent);
 
   }
 
   destroy = () => {
     remove(this.#filmComponent);
-    // remove(this.#filmPopupComponent);
   }
 
-  resetView = () => {
-    if (this.#mode !== Mode.DEFAULT) {
-      this.#hideFilmPopup();
-    }
-  }
+  // resetView = () => {
+  //   if (this.#mode !== Mode.DEFAULT) {
+  //     this.#hideFilmPopup();
+  //   }
+  // }
 
   #showFilmPopup = () => {
-    this.#changeMode();
-    this.#mode = Mode.POPUP;
-    document.body.appendChild(this.#filmPopupComponent.element);
-    document.body.classList.add(BODY_HIDE_OVERFLOW_CLASS_NAME);
+    this.#changeMode(this.#film.id);
   };
 
-  #hideFilmPopup = () => {
-    if (document.body.contains(this.#filmPopupComponent.element)) {
-      document.body.removeChild(this.#filmPopupComponent.element);
-      document.body.classList.remove(BODY_HIDE_OVERFLOW_CLASS_NAME);
-    }
-    this.#mode = Mode.DEFAULT;
-  };
+  // #showFilmPopup = () => {
+  //   this.#changeMode(this.#film.id);
+  //   this.#mode = Mode.POPUP;
+  //   document.body.appendChild(this.#filmPopupComponent.element);
+  //   document.body.classList.add(BODY_HIDE_OVERFLOW_CLASS_NAME);
+  // };
 
-  #onEscKeyDown = (evt) => {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
-      evt.preventDefault();
-      this.#hideFilmPopup();
-      document.removeEventListener('keydown', this.#onEscKeyDown);
-    }
-  };
+  // #hideFilmPopup = () => {
+  //   if (document.body.contains(this.#filmPopupComponent.element)) {
+  //     document.body.removeChild(this.#filmPopupComponent.element);
+  //     document.body.classList.remove(BODY_HIDE_OVERFLOW_CLASS_NAME);
+  //   }
+  //   this.#mode = Mode.DEFAULT;
+  // };
 
-  #handleShowPopupClick = () => {
-    this.#showFilmPopup();
-    document.addEventListener('keydown', this.#onEscKeyDown);
-  }
-
-  #handleClosePopupClick = () => {
-    this.#hideFilmPopup();
-    document.removeEventListener('keydown', this.#onEscKeyDown);
-  }
+  // #onEscKeyDown = (evt) => {
+  //   if (evt.key === 'Escape' || evt.key === 'Esc') {
+  //     evt.preventDefault();
+  //     this.#hideFilmPopup();
+  //     document.removeEventListener('keydown', this.#onEscKeyDown);
+  //   }
+  // };
+  //
+  // #handleShowPopupClick = () => {
+  //   this.#showFilmPopup();
+  //   document.addEventListener('keydown', this.#onEscKeyDown);
+  // }
+  //
+  // #handleClosePopupClick = () => {
+  //   this.#hideFilmPopup();
+  //   document.removeEventListener('keydown', this.#onEscKeyDown);
+  // }
 
   #handleControlsClick = (buttonType) => {
     let userDetails = {};
@@ -126,21 +129,21 @@ export default class FilmPresenter {
     );
   }
 
-  #handleAddComment = (data) => {
-    this.#changeData(
-      UserAction.UPDATE_FILM,
-      UpdateType.PATCH,
-      {...this.#film, comments: data.comments},
-    );
-  }
-
-  #handleDelComment = (data) => {
-    this.#changeData(
-      UserAction.UPDATE_FILM,
-      UpdateType.PATCH,
-      {...this.#film, comments: data.comments},
-    );
-  }
+  // #handleAddComment = (data) => {
+  //   this.#changeData(
+  //     UserAction.UPDATE_FILM,
+  //     UpdateType.PATCH,
+  //     {...this.#film, comments: data.comments},
+  //   );
+  // }
+  //
+  // #handleDelComment = (data) => {
+  //   this.#changeData(
+  //     UserAction.UPDATE_FILM,
+  //     UpdateType.PATCH,
+  //     {...this.#film, comments: data.comments},
+  //   );
+  // }
 
 }
 

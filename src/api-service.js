@@ -32,6 +32,24 @@ export default class ApiService {
     return parsedResponse;
   }
 
+  getComments = async (id) => {
+    return this.#load({url: `comments/${id}`})
+      .then(ApiService.parseResponse);
+  }
+
+  // comments = async () => {
+  //   const response = await this.#load({
+  //     url: `comments/${film.id}`,
+  //     method: Method.PUT,
+  //     body: JSON.stringify(this.#adaptToServer(film)),
+  //     headers: new Headers({'Content-Type': 'application/json'}),
+  //   });
+  //
+  //
+  //   const parsedResponse = await ApiService.parseResponse(response);
+  //   return parsedResponse;
+  // }
+
   addComment = async (data) => {
     const response = await this.#load({
       url: `comments/${data.id}`,

@@ -9,7 +9,10 @@ const commentContainerClassName = 'film-details__comment';
 const getClassNameActive = (flag) => flag ? 'film-details__control-button--active' : '';
 const emojiList = ['smile', 'sleeping', 'puke', 'angry'];
 
-export const createFilmPopupTemplate = (film) => {
+export const createFilmPopupTemplate = (film, commentsAll, state) => {
+
+  const {isLoadCommentsError} = state;
+  const commentsList = commentsAll;
 
   const {
     title, alternativeTitle, totalRating, release, runtime,
@@ -19,7 +22,7 @@ export const createFilmPopupTemplate = (film) => {
 
   const currentEmoji = currentCommentEmoji ? currentCommentEmoji : '';
 
-  const filmComments = film.comments;
+  const filmComments = commentsList;
 
   const dateRelease = formatDate(release.date, 'D MMMM YYYY');
   const countryRelease = release.releaseCountry;
@@ -105,12 +108,27 @@ export const createFilmPopupTemplate = (film) => {
     <div class="film-details__bottom-container">
       <section class="film-details__comments-wrap">
         <h3 class="film-details__comments-title">
-           Comments <span class="film-details__comments-count">${filmComments.length}</span>
+           ${isLoadCommentsError ? 'Comments not loaded. Please, reload page' : `Comments <span class="film-details__comments-count">${commentsList.length}</span>`}
         </h3>
 
 <!-- комментарии -->
-         <ul class="film-details__comments-list"></ul>
+<!--         <ul class="film-details__comments-list"></ul>-->
+         <ul class="film-details__comments-list">
+           ${filmComments.map(({id, author, comment, date, emotion}) => `<li class="film-details__comment" data-id="${id}">
+             <span class="film-details__comment-emoji">
+               <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
+             </span>
+             <div>
+               <p class="film-details__comment-text">${he.encode(comment)}</p>
+               <p class="film-details__comment-info">
+                 <span class="film-details__comment-author">${author}</span>
+                 <span class="film-details__comment-day">${formatDate(date, 'YYYY/MM/DD HH:mm')}</span>
+                 <button class="film-details__comment-delete">Delete</button>
+               </p>
+             </div>
+           </li>`).join('')}
 
+         </ul>
 
 
         <div class="film-details__new-comment">
@@ -140,16 +158,22 @@ export const createFilmPopupTemplate = (film) => {
 
 export default class FilmPopupView extends SmartView {
   // #film = null;
+  #comments = null;
+  #state = null;
 
-  constructor(film) {
+
+  constructor(film, comments, state) {
     super();
     // this.#film = film;
     this._data = FilmPopupView.parseFilmToData(film);
+    this.#comments = comments;
+    this.#state = state;
+
     this.#setInnerHandlers();
   }
 
   get template() {
-    return createFilmPopupTemplate(this._data);
+    return createFilmPopupTemplate(this._data, this.#comments, this.#state);
   }
 
   setClosePopupClickHandler = (callback) => {

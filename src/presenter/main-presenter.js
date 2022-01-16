@@ -13,6 +13,8 @@ import {TypeFilmList, SortType, UpdateType, UserAction, FilterType} from '../uti
 import {sortFilmsByDate, sortFilmsByRating, sortFilmsByCommetns} from '../utils/film.js';
 import SortPresenter from './sort-presenter.js';
 import {filter} from '../utils/filter.js';
+import FilmPopupPresenter from "./film-popup-presenter";
+import {getNewPopupState} from "../utils/popup";
 
 const FILM_COUNT_PER_STEP = 5;
 const FILM_COUNT_TOP_RATED = 2;
@@ -43,6 +45,8 @@ export default class MainPresenter {
   #filmPresenterAll = new Map();
   #filmPresenterRate = new Map();
   #filmPresenterComment = new Map();
+  #popupPresenter = null;
+  #popupState = null;
 
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.ALL;
@@ -60,7 +64,7 @@ export default class MainPresenter {
   getFilms() {
     this.#filterType = this.#filterModel.filter;
 
-    console.log(this.#filterType);
+    //console.log(this.#filterType);
 
     if (this.#filterType === FilterType.STATS) {
       return [];
@@ -75,7 +79,7 @@ export default class MainPresenter {
       case SortType.RATING:
         return filteredFilms.sort(sortFilmsByRating);
     }
-    console.log(filteredFilms);
+    //console.log(filteredFilms);
 
     return filteredFilms;
   }
@@ -144,10 +148,66 @@ export default class MainPresenter {
     this.#renderFilmsBoard();
   }
 
-  #handleModeChange = () => {
-    this.#filmPresenterAll.forEach((presenter) => presenter.resetView());
-    this.#filmPresenterRate.forEach((presenter) => presenter.resetView());
-    this.#filmPresenterComment.forEach((presenter) => presenter.resetView());
+  #renderPopup = (filmId) => {
+
+    const film = this.#filmsModel.films.find((filmItem) => filmId === filmItem.id);
+
+    console.log(film);
+
+    // 1. если открыт другой попап, то закрываем
+    if (this.#popupPresenter && this.#popupPresenter.film.id !== filmId) {
+      this.#popupPresenter.resetView();
+    }
+
+
+    this.#popupPresenter = new FilmPopupPresenter(this.#handleViewAction, this.#handleModeChange);
+    // this.#popupPresenter.init(film);
+
+    this.#filmsModel.getComments(filmId)
+      .then((comments) => {
+        // console.log(comments);
+        this.#popupState = getNewPopupState();
+        this.#popupPresenter.init(film, comments, this.#popupState);
+      })
+      .catch(() => {
+        this.#popupState = getNewPopupState();
+        this.#popupState = {...this.#popupState, isLoadCommentsError: true};
+        this.#popupPresenter.init(film, [], this.#popupState);
+      });
+
+
+
+  }
+
+  #initPopup = () => {
+    if (this.#popupPresenter) {
+      const filmId = this.#popupPresenter.film.id;
+      const film = this.#filmsModel.films.find((filmItem) => filmId === filmItem.id);
+
+      this.#filmsModel.getComments(film.id)
+        .then((comments) => {
+          // console.log(comments);
+          this.#popupState = getNewPopupState();
+          this.#popupPresenter.init(film, comments, this.#popupState);
+        })
+        .catch(() => {
+          this.#popupState = getNewPopupState();
+          this.#popupPresenter.init(film, [], this.#popupState);
+        });
+    }
+  };
+
+
+
+  #handleModeChange = (filmId) => {
+
+    // console.log(filmId);
+
+    this.#renderPopup(filmId);
+
+    // this.#filmPresenterAll.forEach((presenter) => presenter.resetView());
+    // this.#filmPresenterRate.forEach((presenter) => presenter.resetView());
+    // this.#filmPresenterComment.forEach((presenter) => presenter.resetView());
   }
 
   #handleViewAction = (actionType, updateType, update) => {
@@ -209,6 +269,9 @@ export default class MainPresenter {
         this.#renderBoard();
         break;
     }
+
+
+    this.#initPopup();
 
   }
 

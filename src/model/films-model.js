@@ -9,19 +9,8 @@ export default class FilmsModel extends AbstractObservable {
     super();
     this.#apiService = apiService;
 
-    // this.#apiService.films.then((films) => {
-    //   console.log(films);
-    //   console.log(films.map(this.#adaptToClient));
-    //   // Есть проблема: cтруктура объекта похожа, но некоторые ключи называются иначе,
-    //   // а ещё на сервере используется snake_case, а у нас camelCase.
-    //   // Можно, конечно, переписать часть нашего клиентского приложения, но зачем?
-    //   // Есть вариант получше - паттерн "Адаптер"
-    // });
   }
 
-  // set films(films) {
-  //   this.#films = [...films];
-  // }
 
   get films() {
     return this.#films;
@@ -59,6 +48,23 @@ export default class FilmsModel extends AbstractObservable {
     }
 
   }
+
+  getComments = async (id) => {
+    const comments = await this.#apiService.getComments(id);
+    return comments;
+  }
+
+  addComment = async (updateType, update) => {
+    // try {
+    //   const response = await this.#apiService.addComment(update);
+    //   const newTask = this.#adaptToClient(response);
+    //   this.#tasks = [newTask, ...this.#tasks];
+    //   this._notify(updateType, newTask);
+    // } catch(err) {
+    //   throw new Error('Can\'t add task');
+    // }
+  }
+
 
   #adaptToClient = (film) => {
 
