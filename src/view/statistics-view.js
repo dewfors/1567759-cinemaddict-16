@@ -1,36 +1,9 @@
 import SmartView from './smart-view.js';
 import {calcChart} from '../utils/statistics.js';
-import {getRangUser, getDatePeriod, getSortedGenres} from '../utils/common.js';
+import {getRangUser, getDatePeriod} from '../utils/common.js';
 import {DatePeriod} from '../utils/const.js';
-import {isDateInRange, humanizeDuration} from '../utils/date.js';
-
-const getStatistics = (films) => {
-  const viewedFilmsCount = films.length;
-  if (viewedFilmsCount === 0) {
-    return {
-      viewedFilmsCount: 0,
-      totalDuration: false,
-      topGenre: false,
-    };
-  }
-
-  const totalDuration = films.reduce((duration, filmItem) => duration + filmItem.runtime, 0);
-  const topGenre = getSortedGenres(films)[0][0];
-  return {
-    viewedFilmsCount,
-    totalDuration: humanizeDuration(totalDuration, {asObject: true}),
-    topGenre,
-  };
-};
-
-const formatNumber = (number) => {
-  if (number < 10) {
-    number = `0${number.toString()}`;
-  }
-  return number;
-};
-
-const getStringPeriod = (period) => (period[0].toUpperCase() + period.slice(1)).replace(/-/g, ' ');
+import {isDateInRange} from '../utils/date.js';
+import {getStatistics, formatNumber, getStringPeriod} from '../utils/utils.js';
 
 const createStatisticsTemplate = (state, films) => {
   const {period, filmsPeriod} = state;
@@ -95,18 +68,20 @@ const createStatisticsTemplate = (state, films) => {
 };
 
 export default class StatisticsView extends SmartView {
+  #films = null;
+  #state = null;
 
   constructor(films) {
     super();
-    this._films = films;
-    this._state = {period: DatePeriod.ALL, filmsPeriod: this._getFilmsByPeriod(DatePeriod.ALL, this._films)};
+    this.#films = films;
+    this.#state = {period: DatePeriod.ALL, filmsPeriod: this._getFilmsByPeriod(DatePeriod.ALL, this.#films)};
 
     this.#setPeriodClickHandler();
     this._calcChart();
   }
 
   get template() {
-    return createStatisticsTemplate(this._state, this._films);
+    return createStatisticsTemplate(this.#state, this.#films);
   }
 
   restoreHandlers = () => {
@@ -116,7 +91,7 @@ export default class StatisticsView extends SmartView {
 
   _calcChart() {
     const statisticsCtx = this.element.querySelector('.statistic__chart');
-    calcChart(statisticsCtx, this._state);
+    calcChart(statisticsCtx, this.#state);
   }
 
   _getFilmsByPeriod(period, films) {
@@ -142,7 +117,7 @@ export default class StatisticsView extends SmartView {
     }
     this.updateState({
       period: target.value,
-      filmsPeriod: this._getFilmsByPeriod(target.value, this._films),
+      filmsPeriod: this._getFilmsByPeriod(target.value, this.#films),
     });
   }
 
@@ -150,7 +125,7 @@ export default class StatisticsView extends SmartView {
     if (!update) {
       return;
     }
-    this._state = {...this._state, ...update};
+    this.#state = {...this.#state, ...update};
     this.updateElement();
   }
 
