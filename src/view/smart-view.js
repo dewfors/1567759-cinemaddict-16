@@ -35,4 +35,12 @@ export default class SmartView extends AbstractView {
   restoreHandlers = () => {
     throw new Error('Abstract method not implemented: restoreHandlers');
   }
+
+  updateState(update) {
+    if (!update) {
+      return;
+    }
+    this._state = {...this._state, ...update};
+    this.updateElement();
+  }
 }

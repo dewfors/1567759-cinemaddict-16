@@ -210,7 +210,9 @@ export default class MainPresenter {
     // this.#filmPresenterComment.forEach((presenter) => presenter.resetView());
   }
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = (actionType, updateType, update, state) => {
+
+    console.log(state);
 
     // console.log(actionType, updateType, update);
     // Здесь будем вызывать обновление модели.
@@ -223,10 +225,13 @@ export default class MainPresenter {
         this.#filmsModel.updateFilm(updateType, update);
         break;
       case UserAction.ADD_COMMENT:
-        //this.#filmsModel.addComment(updateType, update);
+        this.#filmsModel.addComment(updateType, update);
         break;
       case UserAction.DELETE_COMMENT:
-        //this.#filmsModel.deleteComment(updateType, update);
+        this.#filmsModel.deleteComment(updateType, update);
+        console.log('update.film', update);
+
+        this.#filmsModel.updateFilm(UpdateType.PATCH, update.film);
         break;
     }
   }

@@ -126,27 +126,50 @@ export default class FilmPopupPresenter {
     );
   }
 
-  #setStateCommentSave(commentEmotion, commentText) {
-    this._filmPopupComponent.updateState({
-      isCommentSave: true,
+  #setStateCommentSave = (commentEmotion, commentText) => {
+    this.#filmPopupComponent.updateState({
+      isCommentSaving: true,
       commentText: commentText,
       commentEmotion: commentEmotion,
     });
   }
 
   #handleAddComment = (data, newComment) => {
+
+    const commentText = newComment.comment;
+    const commentEmotion = newComment.emotion;
+    this.#setStateCommentSave(commentEmotion, commentText);
+
+    const comment = {comment: newComment.comment, emotion: newComment.emotion}
+
+
     this.#changeData(
       UserAction.ADD_COMMENT,
-      UpdateType.PATCH,
-      {...this.#film, comments: data.comments},
+      UpdateType.MINOR,
+      {id: this.#film.id, comment: comment},
+      // {...this.#film, comments: data.comments},
+      {...this.#filmPopupComponent.state},
     );
   }
 
-  #handleDelComment = (data) => {
+
+  #setStateCommentDelete = (commentId) => {
+    this.#filmPopupComponent.updateState({
+      isCommentDeleting: true,
+      idCommentDelete: commentId,
+    });
+  }
+
+  #handleDelComment = (data, commentId) => {
+    this.#setStateCommentDelete(commentId);
+    // console.log(data);
+
     this.#changeData(
-      UserAction.UPDATE_FILM,
-      UpdateType.PATCH,
-      {...this.#film, comments: data.comments},
+      UserAction.DELETE_COMMENT,
+      UpdateType.MINOR,
+      {film: data, commentId: commentId},
+      // {...this.#film, comments: data.comments},
+      {...this.#filmPopupComponent.state},
     );
   }
 

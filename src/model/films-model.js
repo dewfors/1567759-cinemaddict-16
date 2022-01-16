@@ -55,15 +55,41 @@ export default class FilmsModel extends AbstractObservable {
   }
 
   addComment = async (updateType, update) => {
-    // try {
-    //   const response = await this.#apiService.addComment(update);
-    //   const newTask = this.#adaptToClient(response);
-    //   this.#tasks = [newTask, ...this.#tasks];
-    //   this._notify(updateType, newTask);
-    // } catch(err) {
-    //   throw new Error('Can\'t add task');
-    // }
+    const index = this.#films.findIndex((film) => film.id === update.id);
+
+    // console.log(index);
+
+    try {
+      const response = await this.#apiService.addComment(update);
+      const updateFilm = this.#adaptToClient(response.movie);
+
+      this.#films = [
+        ...this.#films.slice(0, index),
+        updateFilm,
+        ...this.#films.slice(index + 1),
+      ];
+      this._notify(updateType, updateFilm);
+    } catch(err) {
+      throw new Error('Can\'t add comment');
+    }
   }
+
+  deleteComment = async (updateType, update) => {
+    // const index = this.#films.findIndex((film) => film.id === update.film.id);
+
+    // console.log(index);
+
+    try {
+      await this.#apiService.deleteComment(update);
+
+      // this._notify(updateType);
+    } catch(err) {
+      console.log(err);
+      throw new Error('Can\'t delete comment');
+    }
+  }
+
+
 
 
   #adaptToClient = (film) => {

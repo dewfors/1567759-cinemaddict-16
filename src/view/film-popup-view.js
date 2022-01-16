@@ -159,7 +159,7 @@ export const createFilmPopupTemplate = (film, commentsAll, state) => {
 export default class FilmPopupView extends SmartView {
   // #film = null;
   #comments = null;
-  #state = null;
+  _state = null;
 
 
   constructor(film, comments, state) {
@@ -167,13 +167,17 @@ export default class FilmPopupView extends SmartView {
     // this.#film = film;
     this._data = FilmPopupView.parseFilmToData(film);
     this.#comments = comments;
-    this.#state = state;
+    this._state = state;
 
     this.#setInnerHandlers();
   }
 
   get template() {
-    return createFilmPopupTemplate(this._data, this.#comments, this.#state);
+    return createFilmPopupTemplate(this._data, this.#comments, this._state);
+  }
+
+  get state() {
+    return this._state;
   }
 
   setClosePopupClickHandler = (callback) => {
@@ -259,12 +263,14 @@ export default class FilmPopupView extends SmartView {
 
       // надо записать новый комментарий
       this._data = FilmPopupView.parseFilmToData(this._data, UserAction.ADD_COMMENT, newComment);
-      this._callback.addComment(this._data);
+      this._callback.addComment(this._data, newComment);
     }
   }
 
   #handlerCommentDelete = (evt) => {
     evt.preventDefault();
+
+    console.log(evt);
 
     const isDeleteCommentButton = evt.target.classList.contains(deleteCommentButtonClassName);
     if (!isDeleteCommentButton) {
@@ -273,8 +279,13 @@ export default class FilmPopupView extends SmartView {
 
     const commentIdToDelete = evt.target.closest(`.${commentContainerClassName}`).dataset.id;
 
+    console.log('commentIdToDelete', commentIdToDelete);
+
     this._data = FilmPopupView.parseFilmToData(this._data, UserAction.DELETE_COMMENT, commentIdToDelete);
-    this._callback.delComment(this._data);
+
+    console.log(this._data);
+
+    this._callback.delComment(this._data, commentIdToDelete);
 
   }
 
@@ -289,7 +300,7 @@ export default class FilmPopupView extends SmartView {
     }
 
     if (action === UserAction.DELETE_COMMENT) {
-      filmData.comments = [...filmData.comments].filter((commentItem) => commentItem.id !== comment);
+      filmData.comments = [...filmData.comments].filter((commentItem) => commentItem !== comment);
     }
 
 
