@@ -1,7 +1,5 @@
 import AbstractObservable from '../utils/abstract-observable.js';
-import {nanoid} from "nanoid";
-import {getRandomInteger} from "../utils/utils";
-import {UpdateType} from "../utils/const";
+import {UpdateType} from '../utils/const.js';
 
 export default class FilmsModel extends AbstractObservable {
   #apiService = null;
