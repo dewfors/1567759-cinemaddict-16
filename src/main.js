@@ -13,6 +13,7 @@ const END_POINT = 'https://16.ecmascript.pages.academy/cinemaddict';
 
 const API = new APIMOCK();
 const films = API.getFilms();
+console.log(films);
 // const films = [];
 
 const filmsModel = new FilmsModel(new ApiService(END_POINT, AUTHORIZATION));

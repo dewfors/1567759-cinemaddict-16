@@ -21,9 +21,10 @@ export default class ApiService {
     const response = await this.#load({
       url: `movies/${film.id}`,
       method: Method.PUT,
-      body: JSON.stringify(film),
+      body: JSON.stringify(this.#adaptToServer(film)),
       headers: new Headers({'Content-Type': 'application/json'}),
     });
+
 
     const parsedResponse = await ApiService.parseResponse(response);
 
@@ -49,6 +50,38 @@ export default class ApiService {
     } catch (err) {
       ApiService.catchError(err);
     }
+  }
+
+  #adaptToServer = (film) => {
+    const adaptedFilm = {
+      'id': film.id,
+      'comments': film.comments,
+      'film_info': {
+        'actors': film.actors,
+        'age_rating': film.ageRating,
+        'alternative_title': film.alternativeTitle,
+        'description': film.description,
+        'director': film.director,
+        'genre': film.genre,
+        'poster': film.poster,
+        'release': {
+          'date': film.release.date.toISOString(),
+          'release_country': film.release.releaseCountry,
+        },
+        'runtime': film.runtime,
+        'title': film.title,
+        'total_rating': film.totalRating,
+        'writers': film.writers,
+      },
+      'user_details': {
+        'already_watched': film.userDetails.alreadyWatched,
+        'favorite': film.userDetails.favorite,
+        'watching_date': film.userDetails.watchingDate.toISOString(),
+        'watchlist': film.userDetails.watchlist,
+      },
+    };
+
+    return adaptedFilm;
   }
 
   static parseResponse = (response) => response.json();

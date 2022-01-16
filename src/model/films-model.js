@@ -1,4 +1,6 @@
 import AbstractObservable from '../utils/abstract-observable.js';
+import {nanoid} from "nanoid";
+import {getRandomInteger} from "../utils/utils";
 
 export default class FilmsModel extends AbstractObservable {
   #apiService = null;
@@ -10,6 +12,7 @@ export default class FilmsModel extends AbstractObservable {
 
     this.#apiService.films.then((films) => {
       console.log(films);
+      console.log(films.map(this.#adaptToClient));
       // Есть проблема: cтруктура объекта похожа, но некоторые ключи называются иначе,
       // а ещё на сервере используется snake_case, а у нас camelCase.
       // Можно, конечно, переписать часть нашего клиентского приложения, но зачем?
@@ -39,5 +42,38 @@ export default class FilmsModel extends AbstractObservable {
     ];
 
     this._notify(updateType, update);
+  }
+
+  #adaptToClient = (film) => {
+
+    const adaptedFilm = {
+      id: film.id,
+      title: film['film_info'].title,
+      alternativeTitle: film['film_info']['alternative_title'],
+      totalRating: film['film_info']['total_rating'],
+      poster: film['film_info'].poster,
+      ageRating: film['film_info']['age_rating'],
+      director: film['film_info'].director,
+      writers: film['film_info'].writers,
+      actors: film['film_info'].actors,
+      release: {
+        date: new Date(film['film_info'].release.date),
+        releaseCountry: film['film_info'].release['release_country'],
+      },
+      runtime: film['film_info'].runtime,
+      genre: film['film_info'].genre,
+      description: film['film_info'].description,
+      comments: film.comments,
+
+      userDetails: {
+        watchlist: film['user_details'].watchlist,
+        alreadyWatched: film['user_details']['already_watched'],
+        watchingDate: new Date(film['user_details']['watching_date']),
+        favorite: film['user_details'].favorite,
+      }
+    };
+
+
+    return adaptedFilm;
   }
 }
