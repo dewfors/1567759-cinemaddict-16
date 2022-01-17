@@ -32,12 +32,7 @@ export default class ApiService {
     return parsedResponse;
   }
 
-  getComments = async (id) => {
-    return this.#load({url: `comments/${id}`})
-      .then(ApiService.parseResponse);
-  }
-
-
+  getComments = async (id) => this.#load({url: `comments/${id}`}).then(ApiService.parseResponse);
 
   addComment = async (data) => {
     const response = await this.#load({
@@ -47,11 +42,7 @@ export default class ApiService {
       headers: new Headers({'Content-Type': 'application/json'}),
     });
 
-    // console.log(data);
-
     const parsedResponse = await ApiService.parseResponse(response);
-
-    // console.log(parsedResponse);
 
     return parsedResponse;
   }

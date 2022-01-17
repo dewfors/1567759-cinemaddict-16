@@ -1,19 +1,11 @@
-import FilmCardView from '../view/film-card-view.js';
 import FilmPopupView from '../view/film-popup-view.js';
 import {BODY_HIDE_OVERFLOW_CLASS_NAME, TypeControls, UpdateType, UserAction} from '../utils/const.js';
-import {render, RenderPosition, replace, remove} from '../utils/render.js';
-
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  POPUP: 'POPUP',
-};
+import {remove} from '../utils/render.js';
 
 export default class FilmPopupPresenter {
-  // #filmListContainer = null;
   #changeData = null;
   #changeMode = null;
 
-  // #filmComponent = null;
   #filmPopupComponent = null;
   #scrollTop = 0;
 
@@ -21,14 +13,12 @@ export default class FilmPopupPresenter {
   #film = null;
   #comments = null;
   #state = null;
-  // #mode = Mode.DEFAULT;
 
   constructor(changeData, changeMode) {
     this.#changeData = changeData;
     this.#changeMode = changeMode;
 
     this.#scrollTop = 0;
-
   }
 
   get film() {
@@ -41,7 +31,6 @@ export default class FilmPopupPresenter {
     this.#state = state;
 
     this.#renderPopup(this.#state);
-
   }
 
   #renderPopup = (state) => {
@@ -67,13 +56,7 @@ export default class FilmPopupPresenter {
     this.#hideFilmPopup();
   }
 
-  // #showFilmPopup = () => {
-  //   this.#changeMode(this.#film.id);
-  // };
-
   #showFilmPopup = () => {
-    // this.#changeMode(this.#film.id);
-    // this.#mode = Mode.POPUP;
     document.body.appendChild(this.#filmPopupComponent.element);
     document.body.classList.add(BODY_HIDE_OVERFLOW_CLASS_NAME);
     document.addEventListener('keydown', this.#onEscKeyDown);
@@ -119,7 +102,7 @@ export default class FilmPopupPresenter {
         userDetails = {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite};
         break;
     }
-    this.#changeData(
+    this.#changeData (
       UserAction.UPDATE_FILM,
       UpdateType.MINOR,
       {...this.#film, userDetails: userDetails},
@@ -140,14 +123,12 @@ export default class FilmPopupPresenter {
     const commentEmotion = newComment.emotion;
     this.#setStateCommentSave(commentEmotion, commentText);
 
-    const comment = {comment: newComment.comment, emotion: newComment.emotion}
-
+    const comment = {comment: newComment.comment, emotion: newComment.emotion};
 
     this.#changeData(
       UserAction.ADD_COMMENT,
       UpdateType.MINOR,
       {id: this.#film.id, comment: comment},
-      // {...this.#film, comments: data.comments},
       {...this.#filmPopupComponent.state},
     );
   }
@@ -162,13 +143,11 @@ export default class FilmPopupPresenter {
 
   #handleDelComment = (data, commentId) => {
     this.#setStateCommentDelete(commentId);
-    // console.log(data);
 
     this.#changeData(
       UserAction.DELETE_COMMENT,
       UpdateType.MINOR,
       {film: data, commentId: commentId},
-      // {...this.#film, comments: data.comments},
       {...this.#filmPopupComponent.state},
     );
   }
@@ -186,6 +165,4 @@ export default class FilmPopupPresenter {
       : '.film-details__new-comment';
     this.#filmPopupComponent.shakeElement(commentElementClassName, resetState);
   }
-
 }
-

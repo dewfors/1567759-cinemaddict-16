@@ -11,8 +11,6 @@ const emojiList = ['smile', 'sleeping', 'puke', 'angry'];
 
 export const createFilmPopupTemplate = (film, commentsAll, state) => {
 
-  console.log(state);
-
   const {isLoadCommentsError} = state;
   const commentsList = commentsAll;
 
@@ -273,8 +271,6 @@ export default class FilmPopupView extends SmartView {
   #handlerCommentDelete = (evt) => {
     evt.preventDefault();
 
-    //console.log(evt);
-
     const isDeleteCommentButton = evt.target.classList.contains(deleteCommentButtonClassName);
     if (!isDeleteCommentButton) {
       return;
@@ -282,11 +278,7 @@ export default class FilmPopupView extends SmartView {
 
     const commentIdToDelete = evt.target.closest(`.${commentContainerClassName}`).dataset.id;
 
-    //console.log('commentIdToDelete', commentIdToDelete);
-
     this._data = FilmPopupView.parseFilmToData(this._data, UserAction.DELETE_COMMENT, commentIdToDelete);
-
-    //console.log(this._data);
 
     this._callback.delComment(this._data, commentIdToDelete);
 

@@ -57,8 +57,6 @@ export default class FilmsModel extends AbstractObservable {
   addComment = async (updateType, update) => {
     const index = this.#films.findIndex((film) => film.id === update.id);
 
-    // console.log(index);
-
     try {
       const response = await this.#apiService.addComment(update);
       const updateFilm = this.#adaptToClient(response.movie);
@@ -75,22 +73,12 @@ export default class FilmsModel extends AbstractObservable {
   }
 
   deleteComment = async (updateType, update) => {
-    // const index = this.#films.findIndex((film) => film.id === update.film.id);
-
-    // console.log(index);
-
     try {
       await this.#apiService.deleteComment(update);
-
-      // this._notify(updateType);
     } catch(err) {
-      //console.log(err);
       throw new Error('Can\'t delete comment');
     }
   }
-
-
-
 
   #adaptToClient = (film) => {
 

@@ -1,6 +1,5 @@
 import FilmCardView from '../view/film-card-view.js';
-import FilmPopupView from '../view/film-popup-view.js';
-import {BODY_HIDE_OVERFLOW_CLASS_NAME, TypeControls, UpdateType, UserAction} from '../utils/const.js';
+import {TypeControls, UpdateType, UserAction} from '../utils/const.js';
 import {render, RenderPosition, replace, remove} from '../utils/render.js';
 
 const Mode = {
@@ -14,7 +13,6 @@ export default class FilmPresenter {
   #changeMode = null;
 
   #filmComponent = null;
-  // #filmPopupComponent = null;
 
   #film = null;
   #mode = Mode.DEFAULT;
@@ -29,18 +27,11 @@ export default class FilmPresenter {
     this.#film = film;
 
     const prevFilmComponent = this.#filmComponent;
-    // const prevFilmPopupComponent = this.#filmPopupComponent;
 
     this.#filmComponent = new FilmCardView(film);
-    // this.#filmPopupComponent = new FilmPopupView(film);
 
     this.#filmComponent.setShowPopupClickHandler(this.#showFilmPopup);
-    // this.#filmPopupComponent.setClosePopupClickHandler(this.#handleClosePopupClick);
     this.#filmComponent.setControlsClickHandler(this.#handleControlsClick);
-    // this.#filmPopupComponent.setControlsClickHandler(this.#handleControlsClick);
-
-    // this.#filmPopupComponent.setAddCommentHandler(this.#handleAddComment);
-    // this.#filmPopupComponent.setDelCommentHandler(this.#handleDelComment);
 
     if (prevFilmComponent === null) {
       render(this.#filmListContainer, this.#filmComponent, RenderPosition.BEFOREEND);
@@ -53,60 +44,18 @@ export default class FilmPresenter {
 
     if (this.#mode === Mode.POPUP) {
       replace(this.#filmComponent, prevFilmComponent);
-      // replace(this.#filmPopupComponent, prevFilmPopupComponent);
     }
 
     remove(prevFilmComponent);
-    // remove(prevFilmPopupComponent);
-
   }
 
   destroy = () => {
     remove(this.#filmComponent);
   }
 
-  // resetView = () => {
-  //   if (this.#mode !== Mode.DEFAULT) {
-  //     this.#hideFilmPopup();
-  //   }
-  // }
-
   #showFilmPopup = () => {
     this.#changeMode(this.#film.id);
   };
-
-  // #showFilmPopup = () => {
-  //   this.#changeMode(this.#film.id);
-  //   this.#mode = Mode.POPUP;
-  //   document.body.appendChild(this.#filmPopupComponent.element);
-  //   document.body.classList.add(BODY_HIDE_OVERFLOW_CLASS_NAME);
-  // };
-
-  // #hideFilmPopup = () => {
-  //   if (document.body.contains(this.#filmPopupComponent.element)) {
-  //     document.body.removeChild(this.#filmPopupComponent.element);
-  //     document.body.classList.remove(BODY_HIDE_OVERFLOW_CLASS_NAME);
-  //   }
-  //   this.#mode = Mode.DEFAULT;
-  // };
-
-  // #onEscKeyDown = (evt) => {
-  //   if (evt.key === 'Escape' || evt.key === 'Esc') {
-  //     evt.preventDefault();
-  //     this.#hideFilmPopup();
-  //     document.removeEventListener('keydown', this.#onEscKeyDown);
-  //   }
-  // };
-  //
-  // #handleShowPopupClick = () => {
-  //   this.#showFilmPopup();
-  //   document.addEventListener('keydown', this.#onEscKeyDown);
-  // }
-  //
-  // #handleClosePopupClick = () => {
-  //   this.#hideFilmPopup();
-  //   document.removeEventListener('keydown', this.#onEscKeyDown);
-  // }
 
   #handleControlsClick = (buttonType) => {
     let userDetails = {};
@@ -129,21 +78,4 @@ export default class FilmPresenter {
     );
   }
 
-  // #handleAddComment = (data) => {
-  //   this.#changeData(
-  //     UserAction.UPDATE_FILM,
-  //     UpdateType.PATCH,
-  //     {...this.#film, comments: data.comments},
-  //   );
-  // }
-  //
-  // #handleDelComment = (data) => {
-  //   this.#changeData(
-  //     UserAction.UPDATE_FILM,
-  //     UpdateType.PATCH,
-  //     {...this.#film, comments: data.comments},
-  //   );
-  // }
-
 }
-

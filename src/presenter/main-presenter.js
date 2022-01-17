@@ -13,8 +13,8 @@ import {TypeFilmList, SortType, UpdateType, UserAction, FilterType} from '../uti
 import {sortFilmsByDate, sortFilmsByRating, sortFilmsByCommetns} from '../utils/film.js';
 import SortPresenter from './sort-presenter.js';
 import {filter} from '../utils/filter.js';
-import FilmPopupPresenter from "./film-popup-presenter";
-import {getNewPopupState} from "../utils/popup";
+import FilmPopupPresenter from './film-popup-presenter.js';
+import {getNewPopupState} from '../utils/popup.js';
 
 const FILM_COUNT_PER_STEP = 5;
 const FILM_COUNT_TOP_RATED = 2;
@@ -64,8 +64,6 @@ export default class MainPresenter {
   getFilms() {
     this.#filterType = this.#filterModel.filter;
 
-    //console.log(this.#filterType);
-
     if (this.#filterType === FilterType.STATS) {
       return [];
     }
@@ -79,14 +77,12 @@ export default class MainPresenter {
       case SortType.RATING:
         return filteredFilms.sort(sortFilmsByRating);
     }
-    //console.log(filteredFilms);
 
     return filteredFilms;
   }
 
   init = () => {
     this.#renderBoard();
-    // this.#renderStatistics();
   }
 
   #destroy = () => {
@@ -131,11 +127,9 @@ export default class MainPresenter {
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;
     }
-
   }
 
   #renderBoard = () => {
-
     if (this.#isLoading) {
       this.#renderLoading();
       return;
@@ -149,23 +143,17 @@ export default class MainPresenter {
   }
 
   #renderPopup = (filmId) => {
-
     const film = this.#filmsModel.films.find((filmItem) => filmId === filmItem.id);
-
-   //console.log(film);
 
     // 1. если открыт другой попап, то закрываем
     if (this.#popupPresenter && this.#popupPresenter.film.id !== filmId) {
       this.#popupPresenter.resetView();
     }
 
-
     this.#popupPresenter = new FilmPopupPresenter(this.#handleViewAction, this.#handleModeChange);
-    // this.#popupPresenter.init(film);
 
     this.#filmsModel.getComments(filmId)
       .then((comments) => {
-        // console.log(comments);
         this.#popupState = getNewPopupState();
         this.#popupPresenter.init(film, comments, this.#popupState);
       })
@@ -174,9 +162,6 @@ export default class MainPresenter {
         this.#popupState = {...this.#popupState, isLoadCommentsError: true};
         this.#popupPresenter.init(film, [], this.#popupState);
       });
-
-
-
   }
 
   #initPopup = () => {
@@ -186,7 +171,6 @@ export default class MainPresenter {
 
       this.#filmsModel.getComments(film.id)
         .then((comments) => {
-          // console.log(comments);
           this.#popupState = getNewPopupState();
           this.#popupPresenter.init(film, comments, this.#popupState);
         })
@@ -197,24 +181,12 @@ export default class MainPresenter {
     }
   };
 
-
-
   #handleModeChange = (filmId) => {
-
-    // console.log(filmId);
-
     this.#renderPopup(filmId);
-
-    // this.#filmPresenterAll.forEach((presenter) => presenter.resetView());
-    // this.#filmPresenterRate.forEach((presenter) => presenter.resetView());
-    // this.#filmPresenterComment.forEach((presenter) => presenter.resetView());
   }
 
-  #handleViewAction = async (actionType, updateType, update, state) => {
+  #handleViewAction = async (actionType, updateType, update) => {
 
-    //console.log(state);
-
-    // console.log(actionType, updateType, update);
     // Здесь будем вызывать обновление модели.
     // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
     // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
@@ -243,7 +215,6 @@ export default class MainPresenter {
   }
 
   #handleModelEvent = (updateType, data) => {
-    // console.log(updateType, data);
     // В зависимости от типа изменений решаем, что делать:
     // - PATCH обновить часть списка (например, когда поменялись комментарии)
     // - MINOR обновить список (например, при добавлении в избранное)
