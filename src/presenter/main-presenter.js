@@ -1,4 +1,5 @@
 import {render, RenderPosition, remove} from '../utils/render.js';
+import LoadingView from '../view/loading-view.js';
 import FilmsListNoFilmsView from '../view/films-list-no-films-view.js';
 import FilmsBoardView from '../view/films-board-view.js';
 import FilmsListAllMoviesView from '../view/films-list-all-movies-view.js';
@@ -12,6 +13,8 @@ import {TypeFilmList, SortType, UpdateType, UserAction, FilterType} from '../uti
 import {sortFilmsByDate, sortFilmsByRating, sortFilmsByCommetns} from '../utils/film.js';
 import SortPresenter from './sort-presenter.js';
 import {filter} from '../utils/filter.js';
+import FilmPopupPresenter from './film-popup-presenter.js';
+import {getNewPopupState} from '../utils/popup.js';
 
 const FILM_COUNT_PER_STEP = 5;
 const FILM_COUNT_TOP_RATED = 2;
@@ -32,6 +35,8 @@ export default class MainPresenter {
 
   #showMoreButtonComponent = new ShowMoreButtonView();
 
+  #loadingComponent = new LoadingView();
+
   #noFilmsComponent = null;
   #statisticsComponent = null;
 
@@ -40,9 +45,12 @@ export default class MainPresenter {
   #filmPresenterAll = new Map();
   #filmPresenterRate = new Map();
   #filmPresenterComment = new Map();
+  #popupPresenter = null;
+  #popupState = null;
 
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.ALL;
+  #isLoading = true;
 
   constructor(mainContainer, filmsModel, filterModel) {
     this.#mainContainer = mainContainer;
@@ -69,12 +77,12 @@ export default class MainPresenter {
       case SortType.RATING:
         return filteredFilms.sort(sortFilmsByRating);
     }
+
     return filteredFilms;
   }
 
   init = () => {
     this.#renderBoard();
-    // this.#renderStatistics();
   }
 
   #destroy = () => {
@@ -119,10 +127,14 @@ export default class MainPresenter {
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;
     }
-
   }
 
   #renderBoard = () => {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     if (this.getFilms().length === 0) {
       this.#renderNoFilms();
       return;
@@ -130,15 +142,51 @@ export default class MainPresenter {
     this.#renderFilmsBoard();
   }
 
-  #handleModeChange = () => {
-    this.#filmPresenterAll.forEach((presenter) => presenter.resetView());
-    this.#filmPresenterRate.forEach((presenter) => presenter.resetView());
-    this.#filmPresenterComment.forEach((presenter) => presenter.resetView());
+  #renderPopup = (filmId) => {
+    const film = this.#filmsModel.films.find((filmItem) => filmId === filmItem.id);
+
+    // 1. если открыт другой попап, то закрываем
+    if (this.#popupPresenter && this.#popupPresenter.film.id !== filmId) {
+      this.#popupPresenter.resetView();
+    }
+
+    this.#popupPresenter = new FilmPopupPresenter(this.#handleViewAction, this.#handleModeChange);
+
+    this.#filmsModel.getComments(filmId)
+      .then((comments) => {
+        this.#popupState = getNewPopupState();
+        this.#popupPresenter.init(film, comments, this.#popupState);
+      })
+      .catch(() => {
+        this.#popupState = getNewPopupState();
+        this.#popupState = {...this.#popupState, isLoadCommentsError: true};
+        this.#popupPresenter.init(film, [], this.#popupState);
+      });
   }
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #initPopup = () => {
+    if (this.#popupPresenter) {
+      const filmId = this.#popupPresenter.film.id;
+      const film = this.#filmsModel.films.find((filmItem) => filmId === filmItem.id);
 
-    // console.log(actionType, updateType, update);
+      this.#filmsModel.getComments(film.id)
+        .then((comments) => {
+          this.#popupState = getNewPopupState();
+          this.#popupPresenter.init(film, comments, this.#popupState);
+        })
+        .catch(() => {
+          this.#popupState = getNewPopupState();
+          this.#popupPresenter.init(film, [], this.#popupState);
+        });
+    }
+  };
+
+  #handleModeChange = (filmId) => {
+    this.#renderPopup(filmId);
+  }
+
+  #handleViewAction = async (actionType, updateType, update) => {
+
     // Здесь будем вызывать обновление модели.
     // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
     // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
@@ -146,19 +194,27 @@ export default class MainPresenter {
 
     switch (actionType) {
       case UserAction.UPDATE_FILM:
-        this.#filmsModel.updateFilm(updateType, update);
+        await this.#filmsModel.updateFilm(updateType, update);
         break;
       case UserAction.ADD_COMMENT:
-        //this.#filmsModel.addComment(updateType, update);
+        try {
+          await this.#filmsModel.addComment(updateType, update);
+        } catch (err) {
+          this.#popupPresenter.shakeCommentElement();
+        }
         break;
       case UserAction.DELETE_COMMENT:
-        //this.#filmsModel.deleteComment(updateType, update);
+        try {
+          await this.#filmsModel.deleteComment(updateType, update);
+          await this.#filmsModel.updateFilm(UpdateType.PATCH, update.film);
+        } catch (err) {
+          this.#popupPresenter.shakeCommentElement(update.commentId);
+        }
         break;
     }
   }
 
   #handleModelEvent = (updateType, data) => {
-    // console.log(updateType, data);
     // В зависимости от типа изменений решаем, что делать:
     // - PATCH обновить часть списка (например, когда поменялись комментарии)
     // - MINOR обновить список (например, при добавлении в избранное)
@@ -189,7 +245,15 @@ export default class MainPresenter {
           this.#renderStatistics();
         }
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderBoard();
+        break;
     }
+
+
+    this.#initPopup();
 
   }
 
@@ -207,6 +271,12 @@ export default class MainPresenter {
     if (this.#filmPresenterComment.has(updatedFilm.id)) {
       this.#filmPresenterComment.get(updatedFilm.id).init(updatedFilm);
     }
+  }
+
+  #renderLoading = () => {
+    render(this.#mainContainer, this.#filmsComponent, RenderPosition.BEFOREEND);
+    render(this.#filmsComponent, this.#loadingComponent, RenderPosition.AFTERBEGIN);
+
   }
 
   #renderNoFilms = () => {

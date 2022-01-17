@@ -9,17 +9,23 @@ const commentContainerClassName = 'film-details__comment';
 const getClassNameActive = (flag) => flag ? 'film-details__control-button--active' : '';
 const emojiList = ['smile', 'sleeping', 'puke', 'angry'];
 
-export const createFilmPopupTemplate = (film) => {
+export const createFilmPopupTemplate = (film, commentsAll, state) => {
+
+  const {isLoadCommentsError} = state;
+  const commentsList = commentsAll;
 
   const {
     title, alternativeTitle, totalRating, release, runtime,
     genre, description, poster, ageRating, director, writers,
-    actors, currentCommentEmoji
+    actors, currentCommentEmoji, currentCommentText,
   } = film;
 
   const currentEmoji = currentCommentEmoji ? currentCommentEmoji : '';
+  const currentText = currentCommentText ? currentCommentText : '';
 
-  const filmComments = film.comments;
+  const {isCommentSaving, isCommentDeleting, idCommentDelete} = state;
+
+  const filmComments = commentsList;
 
   const dateRelease = formatDate(release.date, 'D MMMM YYYY');
   const countryRelease = release.releaseCountry;
@@ -105,25 +111,26 @@ export const createFilmPopupTemplate = (film) => {
     <div class="film-details__bottom-container">
       <section class="film-details__comments-wrap">
         <h3 class="film-details__comments-title">
-           Comments <span class="film-details__comments-count">${filmComments.length}</span>
+           ${isLoadCommentsError ? 'Comments not loaded. Please, reload page' : `Comments <span class="film-details__comments-count">${commentsList.length}</span>`}
         </h3>
 
-        <ul class="film-details__comments-list">
-          ${filmComments.map(({id, author, comment, date, emotion}) => `<li class="film-details__comment" data-id="${id}">
-            <span class="film-details__comment-emoji">
-              <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
-            </span>
-            <div>
-              <p class="film-details__comment-text">${he.encode(comment)}</p>
-              <p class="film-details__comment-info">
-                <span class="film-details__comment-author">${author}</span>
-                <span class="film-details__comment-day">${formatDate(date, 'YYYY/MM/DD HH:mm')}</span>
-                <button class="film-details__comment-delete">Delete</button>
-              </p>
-            </div>
-          </li>`).join('')}
+       <ul class="film-details__comments-list">
+         ${filmComments.map(({id, author, comment, date, emotion}) => `<li class="film-details__comment" data-id="${id}">
+           <span class="film-details__comment-emoji">
+             <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
+           </span>
+           <div>
+             <p class="film-details__comment-text">${he.encode(comment)}</p>
+             <p class="film-details__comment-info">
+               <span class="film-details__comment-author">${author}</span>
+               <span class="film-details__comment-day">${formatDate(date, 'YYYY/MM/DD HH:mm')}</span>
+               <button ${isCommentSaving || isCommentDeleting ? 'disabled' : ''} class="film-details__comment-delete">${isCommentDeleting && idCommentDelete === id ? 'Deleting...' : 'Delete'}</button>
+             </p>
+           </div>
+         </li>`).join('')}
 
-        </ul>
+       </ul>
+
 
         <div class="film-details__new-comment">
           <div class="film-details__add-emoji-label">
@@ -131,7 +138,7 @@ export const createFilmPopupTemplate = (film) => {
           </div>
 
           <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+            <textarea ${isCommentSaving ? 'disabled' : ''} class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${!currentText ? '' : he.encode(currentText)}</textarea>
           </label>
 
           <div class="film-details__emoji-list">
@@ -140,27 +147,6 @@ export const createFilmPopupTemplate = (film) => {
                 <img src="./images/emoji/${emojiItem}.png" width="30" height="30" alt="emoji">
               </label>`).join('')}
 
-
-
-<!--            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">-->
-<!--            <label class="film-details__emoji-label" for="emoji-smile">-->
-<!--              <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">-->
-<!--            </label>-->
-
-<!--            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">-->
-<!--            <label class="film-details__emoji-label" for="emoji-sleeping">-->
-<!--              <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">-->
-<!--            </label>-->
-
-<!--            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">-->
-<!--            <label class="film-details__emoji-label" for="emoji-puke">-->
-<!--              <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">-->
-<!--            </label>-->
-
-<!--            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">-->
-<!--            <label class="film-details__emoji-label" for="emoji-angry">-->
-<!--              <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">-->
-<!--            </label>-->
           </div>
         </div>
       </section>
@@ -173,16 +159,26 @@ export const createFilmPopupTemplate = (film) => {
 
 export default class FilmPopupView extends SmartView {
   // #film = null;
+  #comments = null;
+  _state = null;
 
-  constructor(film) {
+
+  constructor(film, comments, state) {
     super();
     // this.#film = film;
     this._data = FilmPopupView.parseFilmToData(film);
+    this.#comments = comments;
+    this._state = state;
+
     this.#setInnerHandlers();
   }
 
   get template() {
-    return createFilmPopupTemplate(this._data);
+    return createFilmPopupTemplate(this._data, this.#comments, this._state);
+  }
+
+  get state() {
+    return this._state;
   }
 
   setClosePopupClickHandler = (callback) => {
@@ -268,7 +264,7 @@ export default class FilmPopupView extends SmartView {
 
       // надо записать новый комментарий
       this._data = FilmPopupView.parseFilmToData(this._data, UserAction.ADD_COMMENT, newComment);
-      this._callback.addComment(this._data);
+      this._callback.addComment(this._data, newComment);
     }
   }
 
@@ -283,7 +279,8 @@ export default class FilmPopupView extends SmartView {
     const commentIdToDelete = evt.target.closest(`.${commentContainerClassName}`).dataset.id;
 
     this._data = FilmPopupView.parseFilmToData(this._data, UserAction.DELETE_COMMENT, commentIdToDelete);
-    this._callback.delComment(this._data);
+
+    this._callback.delComment(this._data, commentIdToDelete);
 
   }
 
@@ -298,7 +295,7 @@ export default class FilmPopupView extends SmartView {
     }
 
     if (action === UserAction.DELETE_COMMENT) {
-      filmData.comments = [...filmData.comments].filter((commentItem) => commentItem.id !== comment);
+      filmData.comments = [...filmData.comments].filter((commentItem) => commentItem !== comment);
     }
 
 
@@ -313,6 +310,11 @@ export default class FilmPopupView extends SmartView {
     // delete film.isRepeating;
 
     return film;
+  }
+
+  shakeElement(commentElementClassName, resetState) {
+    const commentElement = this.element.querySelector(commentElementClassName);
+    this.shake(commentElement, resetState);
   }
 
 }

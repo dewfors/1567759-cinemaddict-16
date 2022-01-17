@@ -9,7 +9,6 @@ export default class SmartView extends AbstractView {
     }
 
     this._data = {...this._data, ...update};
-    // console.log(this._data);
 
     if (justDataUpdating) {
       return;
@@ -34,5 +33,13 @@ export default class SmartView extends AbstractView {
 
   restoreHandlers = () => {
     throw new Error('Abstract method not implemented: restoreHandlers');
+  }
+
+  updateState(update) {
+    if (!update) {
+      return;
+    }
+    this._state = {...this._state, ...update};
+    this.updateElement();
   }
 }
