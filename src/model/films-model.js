@@ -19,7 +19,7 @@ export default class FilmsModel extends AbstractObservable {
   init = async () => {
     try {
       const films = await this.#apiService.films;
-      this.#films = films.map(this.#adaptToClient);
+      this.#films = films.map(FilmsModel.adaptToClient);
     } catch (err) {
       this.#films = [];
     }
@@ -35,7 +35,7 @@ export default class FilmsModel extends AbstractObservable {
 
     try {
       const response = await this.#apiService.updateFilm(update);
-      const updateFilm = this.#adaptToClient(response);
+      const updateFilm = FilmsModel.adaptToClient(response);
       this.#films = [
         ...this.#films.slice(0, index),
         updateFilm,
@@ -59,7 +59,7 @@ export default class FilmsModel extends AbstractObservable {
 
     try {
       const response = await this.#apiService.addComment(update);
-      const updateFilm = this.#adaptToClient(response.movie);
+      const updateFilm = FilmsModel.adaptToClient(response.movie);
 
       this.#films = [
         ...this.#films.slice(0, index),
@@ -80,7 +80,7 @@ export default class FilmsModel extends AbstractObservable {
     }
   }
 
-  #adaptToClient = (film) => {
+  static adaptToClient = (film) => {
 
     const adaptedFilm = {
       id: film.id,
@@ -110,6 +110,37 @@ export default class FilmsModel extends AbstractObservable {
     };
 
 
+    return adaptedFilm;
+  }
+
+  static adaptToServer = (film) => {
+    const adaptedFilm = {
+      'id': film.id,
+      'comments': film.comments,
+      'film_info': {
+        'actors': film.actors,
+        'age_rating': film.ageRating,
+        'alternative_title': film.alternativeTitle,
+        'description': film.description,
+        'director': film.director,
+        'genre': film.genre,
+        'poster': film.poster,
+        'release': {
+          'date': film.release.date.toISOString(),
+          'release_country': film.release.releaseCountry,
+        },
+        'runtime': film.runtime,
+        'title': film.title,
+        'total_rating': film.totalRating,
+        'writers': film.writers,
+      },
+      'user_details': {
+        'already_watched': film.userDetails.alreadyWatched,
+        'favorite': film.userDetails.favorite,
+        'watching_date': film.userDetails.watchingDate.toISOString(),
+        'watchlist': film.userDetails.watchlist,
+      },
+    };
     return adaptedFilm;
   }
 }
