@@ -3,6 +3,7 @@ import SmartView from './smart-view.js';
 import {formatDate, getTimeDuration} from '../utils/common.js';
 import {TypeControls, UserAction} from '../utils/const.js';
 import {nanoid} from 'nanoid';
+import {humanizeTimeFromNow} from '../utils/date.js';
 
 const deleteCommentButtonClassName = 'film-details__comment-delete';
 const commentContainerClassName = 'film-details__comment';
@@ -123,7 +124,7 @@ export const createFilmPopupTemplate = (film, commentsAll, state) => {
              <p class="film-details__comment-text">${he.encode(comment)}</p>
              <p class="film-details__comment-info">
                <span class="film-details__comment-author">${author}</span>
-               <span class="film-details__comment-day">${formatDate(date, 'YYYY/MM/DD HH:mm')}</span>
+               <span class="film-details__comment-day">${humanizeTimeFromNow(date)}</span>
                <button ${isCommentSaving || isCommentDeleting ? 'disabled' : ''} class="film-details__comment-delete">${isCommentDeleting && idCommentDelete === id ? 'Deleting...' : 'Delete'}</button>
              </p>
            </div>
