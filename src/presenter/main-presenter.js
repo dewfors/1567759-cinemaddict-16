@@ -260,8 +260,6 @@ export default class MainPresenter {
 
   #handleFilmChange = (updatedFilm) => {
 
-    // здесь будет вызываться обновление модели
-
     if (this.#filmPresenterAll.has(updatedFilm.id)) {
       this.#filmPresenterAll.get(updatedFilm.id).init(updatedFilm);
     }

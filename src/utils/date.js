@@ -22,6 +22,4 @@ export const humanizeDuration = (duration, {asObject = false} = {}) => {
   return `${hours}h ${minutes}m`;
 };
 
-export const humanizeTimeFromNow = (date) => {
-  return dayjs(date).fromNow();
-};
+export const humanizeTimeFromNow = (date) => dayjs(date).fromNow();
