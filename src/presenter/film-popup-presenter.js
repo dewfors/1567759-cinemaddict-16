@@ -5,19 +5,19 @@ import {remove} from '../utils/render.js';
 export default class FilmPopupPresenter {
   #changeData = null;
   #changeMode = null;
+  #clearPopup = null;
 
   #filmPopupComponent = null;
   #scrollTop = 0;
-
 
   #film = null;
   #comments = null;
   #state = null;
 
-  constructor(changeData, changeMode) {
+  constructor(changeData, changeMode, handlePopupClose) {
     this.#changeData = changeData;
     this.#changeMode = changeMode;
-
+    this.#clearPopup = handlePopupClose;
     this.#scrollTop = 0;
   }
 
@@ -67,7 +67,6 @@ export default class FilmPopupPresenter {
       document.body.removeChild(this.#filmPopupComponent.element);
       document.body.classList.remove(BODY_HIDE_OVERFLOW_CLASS_NAME);
     }
-    // this.#mode = Mode.DEFAULT;
   };
 
   #onEscKeyDown = (evt) => {
@@ -75,6 +74,7 @@ export default class FilmPopupPresenter {
       evt.preventDefault();
       this.#hideFilmPopup();
       document.removeEventListener('keydown', this.#onEscKeyDown);
+      this.#clearPopup();
     }
   };
 
@@ -86,6 +86,7 @@ export default class FilmPopupPresenter {
   #handleClosePopupClick = () => {
     this.#hideFilmPopup();
     document.removeEventListener('keydown', this.#onEscKeyDown);
+    this.#clearPopup();
   }
 
   #handleControlsClick = (buttonType) => {
@@ -118,7 +119,6 @@ export default class FilmPopupPresenter {
   }
 
   #handleAddComment = (data, newComment) => {
-
     const commentText = newComment.comment;
     const commentEmotion = newComment.emotion;
     this.#setStateCommentSave(commentEmotion, commentText);

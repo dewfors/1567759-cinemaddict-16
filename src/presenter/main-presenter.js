@@ -118,9 +118,6 @@ export default class MainPresenter {
     if (resetRenderedFilmCount) {
       this.#renderedFilmCount = FILM_COUNT_PER_STEP;
     } else {
-      // На случай, если перерисовка доски вызвана
-      // уменьшением количества фильмов
-      // нужно скорректировать число показанных фильмов
       this.#renderedFilmCount = Math.min(filmCount, this.#renderedFilmCount);
     }
 
@@ -145,12 +142,11 @@ export default class MainPresenter {
   #renderPopup = (filmId) => {
     const film = this.#filmsModel.films.find((filmItem) => filmId === filmItem.id);
 
-    // 1. если открыт другой попап, то закрываем
     if (this.#popupPresenter && this.#popupPresenter.film.id !== filmId) {
       this.#popupPresenter.resetView();
     }
 
-    this.#popupPresenter = new FilmPopupPresenter(this.#handleViewAction, this.#handleModeChange);
+    this.#popupPresenter = new FilmPopupPresenter(this.#handleViewAction, this.#handleModeChange, this.#resetPopup);
 
     this.#filmsModel.getComments(filmId)
       .then((comments) => {
@@ -181,16 +177,18 @@ export default class MainPresenter {
     }
   };
 
+  #resetPopup = () => {
+    if (!this.#popupPresenter) {
+      return;
+    }
+    this.#popupPresenter = null;
+  }
+
   #handleModeChange = (filmId) => {
     this.#renderPopup(filmId);
   }
 
   #handleViewAction = async (actionType, updateType, update) => {
-
-    // Здесь будем вызывать обновление модели.
-    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
-    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
-    // update - обновленные данные
 
     switch (actionType) {
       case UserAction.UPDATE_FILM:
@@ -252,14 +250,11 @@ export default class MainPresenter {
         break;
     }
 
-
     this.#initPopup();
-
   }
 
 
   #handleFilmChange = (updatedFilm) => {
-
     if (this.#filmPresenterAll.has(updatedFilm.id)) {
       this.#filmPresenterAll.get(updatedFilm.id).init(updatedFilm);
     }
@@ -274,7 +269,6 @@ export default class MainPresenter {
   #renderLoading = () => {
     render(this.#mainContainer, this.#filmsComponent, RenderPosition.BEFOREEND);
     render(this.#filmsComponent, this.#loadingComponent, RenderPosition.AFTERBEGIN);
-
   }
 
   #renderNoFilms = () => {
@@ -316,9 +310,7 @@ export default class MainPresenter {
     this.#currentSortType = sortType;
     this.#renderSort();
 
-    // - Очищаем список
     this.#clearFilmListAllMovies();
-    // - Рендерим список заново
     this.#renderFilmsListAllMovies();
   }
 
@@ -342,7 +334,6 @@ export default class MainPresenter {
     if (typeFilmList === TypeFilmList.MOST_COMMENTED) {
       this.#filmPresenterComment.set(film.id, filmPresenter);
     }
-
   }
 
   #renderFilmsAllMovies = (films) => {
@@ -350,7 +341,6 @@ export default class MainPresenter {
   }
 
   #renderFilmsListAllMovies = () => {
-
     const filmCount = this.getFilms().length;
     const films = this.getFilms().slice(0, Math.min(filmCount, FILM_COUNT_PER_STEP));
 
@@ -359,11 +349,9 @@ export default class MainPresenter {
     if (filmCount > FILM_COUNT_PER_STEP) {
       this.#renderShowMoreButton();
     }
-
   }
 
   #handleShowMoreButtonClick = () => {
-
     const filmCount = this.getFilms().length;
     const newRenderedFilmCount = Math.min(filmCount, this.#renderedFilmCount + FILM_COUNT_PER_STEP);
     const films = this.getFilms().slice(this.#renderedFilmCount, newRenderedFilmCount);
@@ -374,7 +362,6 @@ export default class MainPresenter {
     if (this.#renderedFilmCount >= filmCount) {
       remove(this.#showMoreButtonComponent);
     }
-
   }
 
   #renderShowMoreButton = () => {
