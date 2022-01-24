@@ -49,10 +49,7 @@ export default class FilmsModel extends AbstractObservable {
 
   }
 
-  getComments = async (id) => {
-    const comments = await this.#apiService.getComments(id);
-    return comments;
-  }
+  getComments = async (id) => await this.#apiService.getComments(id);
 
   addComment = async (updateType, update) => {
     const index = this.#films.findIndex((film) => film.id === update.id);
@@ -81,7 +78,6 @@ export default class FilmsModel extends AbstractObservable {
   }
 
   static adaptToClient = (film) => {
-
     const adaptedFilm = {
       id: film.id,
       title: film['film_info'].title,
@@ -108,7 +104,6 @@ export default class FilmsModel extends AbstractObservable {
         favorite: film['user_details'].favorite,
       }
     };
-
 
     return adaptedFilm;
   }

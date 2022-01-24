@@ -16,7 +16,6 @@ export const calcChart = (statisticsCtx, state) => {
     genreCounts.push(count);
   });
 
-  // Обязательно рассчитайте высоту canvas, она зависит от количества элементов диаграммы
   statisticsCtx.height = BAR_HEIGHT * sortGenres.length;
 
 

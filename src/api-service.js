@@ -29,9 +29,7 @@ export default class ApiService {
       headers: new Headers({'Content-Type': 'application/json'}),
     });
 
-
-    const parsedResponse = await ApiService.parseResponse(response);
-    return parsedResponse;
+    return await ApiService.parseResponse(response);
   }
 
   getComments = async (id) => this.#load({url: `comments/${id}`}).then(ApiService.parseResponse);
@@ -44,19 +42,13 @@ export default class ApiService {
       headers: new Headers({'Content-Type': 'application/json'}),
     });
 
-    const parsedResponse = await ApiService.parseResponse(response);
-
-    return parsedResponse;
+    return await ApiService.parseResponse(response);
   }
 
-  deleteComment = async (data) => {
-    const response = await this.#load({
-      url: `comments/${data.commentId}`,
-      method: Method.DELETE,
-    });
-
-    return response;
-  }
+  deleteComment = async (data) => await this.#load({
+    url: `comments/${data.commentId}`,
+    method: Method.DELETE,
+  });
 
   #load = async ({
     url,
@@ -78,7 +70,6 @@ export default class ApiService {
       ApiService.catchError(err);
     }
   }
-
 
   static parseResponse = (response) => response.json();
 

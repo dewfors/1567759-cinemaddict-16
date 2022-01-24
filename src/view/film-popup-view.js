@@ -159,14 +159,12 @@ export const createFilmPopupTemplate = (film, commentsAll, state) => {
 
 
 export default class FilmPopupView extends SmartView {
-  // #film = null;
   #comments = null;
   _state = null;
 
 
   constructor(film, comments, state) {
     super();
-    // this.#film = film;
     this._data = FilmPopupView.parseFilmToData(film);
     this.#comments = comments;
     this._state = state;
@@ -258,7 +256,6 @@ export default class FilmPopupView extends SmartView {
         id: nanoid(),
         comment: this._data.currentCommentText,
         emotion: this._data.currentCommentEmoji,
-        //
         date: 1641686983166,
         author: 'Jessica'
       };
@@ -282,9 +279,7 @@ export default class FilmPopupView extends SmartView {
     this._data = FilmPopupView.parseFilmToData(this._data, UserAction.DELETE_COMMENT, commentIdToDelete);
 
     this._callback.delComment(this._data, commentIdToDelete);
-
   }
-
 
   static parseFilmToData = (film, action, comment) => {
     const filmData = {...film};
@@ -299,16 +294,12 @@ export default class FilmPopupView extends SmartView {
       filmData.comments = [...filmData.comments].filter((commentItem) => commentItem !== comment);
     }
 
-
     return filmData;
   }
 
   static parseDataToFilm = (data) => {
     const film = {...data};
-
-
     delete film.currentCommentEmoji;
-    // delete film.isRepeating;
 
     return film;
   }
